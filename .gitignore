@@ -1,0 +1,49 @@
+## Visual Studio
+.vs/
+*.vc.db
+*.VC.opendb
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Build results
+[Bb]in/
+[Oo]bj/
+*.log
+*.tlog
+*.pdb
+*.idb
+*.ipch
+*.aps
+*.ncb
+*.opendb
+*.unsuccessfulbuild
+*.cachefile
+
+## DirectX specific (if using compiled shaders or intermediate files)
+*.cso
+*.fxc
+
+## Build directories
+Debug/
+Release/
+x64/Debug/
+x64/Release/
+x86/Debug/
+x86/Release/
+
+## Backup & temporary files
+*.bak
+*.tmp
+*.temp
+*.~*
+~$*
+
+## Packages
+packages/
+*.nupkg
+
+## Others
+*.DS_Store
+Thumbs.db
