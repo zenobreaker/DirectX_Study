@@ -10,6 +10,8 @@
 ## Build results
 [Bb]in/
 [Oo]bj/
+*.obj
+*.pch
 *.log
 *.tlog
 *.pdb
@@ -20,6 +22,8 @@
 *.opendb
 *.unsuccessfulbuild
 *.cachefile
+*.recipe
+*.ilk
 
 ## DirectX specific (if using compiled shaders or intermediate files)
 *.cso
