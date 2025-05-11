@@ -85,8 +85,9 @@ void Window::Create()
 	ShowWindow(Desc.Handle, SW_SHOWNORMAL);
 	SetForegroundWindow(Desc.Handle);
 	SetFocus(Desc.Handle);
-
 	ShowCursor(true);
+
+	D3D::SetDesc(Desc);
 }
 
 void Window::Destroy()
@@ -125,7 +126,10 @@ LRESULT Window::WndProc(HWND InHandle, UINT InMessage, WPARAM InwParam, LPARAM I
 
 void Window::MainRender()
 {
-	Main->Tick();
+	D3D::Get()->ClearRenderTargetView(Color(0, 0, 0, 0)); 
 
+	Main->Tick();
 	Main->Render();
+
+	D3D::Get()->Present(); 
 }

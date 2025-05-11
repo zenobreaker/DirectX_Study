@@ -31,14 +31,32 @@ void D3D::SetDesc(const D3DDesc& InDesc)
 	D3dDesc = InDesc;
 }
 
+void D3D::ClearRenderTargetView(Color InColor)
+{
+	DeviceContext->ClearRenderTargetView(RenderTargetView, InColor);
+}
+
+void D3D::Present()
+{
+	SwapChain->Present(0, 0);
+}
 
 D3D::D3D()
 {
 	CreateDevice();
+	CreateRTV();
+	CreateViewport();
 }
 
 D3D::~D3D()
 {
+	Release(RenderTargetView);
+
+	Release(DeviceContext);
+	Release(Device);
+
+	Release(SwapChain);
+
 }
 
 void D3D::CreateDevice()
@@ -70,21 +88,53 @@ void D3D::CreateDevice()
 
 		swapChainDesc.OutputWindow = D3dDesc.Handle;
 
+
 		HRESULT hr = D3D11CreateDeviceAndSwapChain
 		(
-			nullptr,
-			D3D_DRIVER_TYPE_HARDWARE,
-			nullptr,
-			0,
-			nullptr,
-			1,
-			D3D11_SDK_VERSION,
-			&swapChainDesc,
-			&SwapChain,
-			&Device,
-			nullptr,
+			nullptr, 
+			D3D_DRIVER_TYPE_HARDWARE, 
+			nullptr, 
+			0, 
+			nullptr, 
+			0, 
+			D3D11_SDK_VERSION, 
+			&swapChainDesc, 
+			&SwapChain, 
+			&Device, 
+			nullptr, 
 			&DeviceContext
 		);
-		assert(hr >= 0 && "Create device Failed!");
+		assert(hr >= 0 && "Create Device Failed!");
 	}
 }
+
+void D3D::CreateRTV()
+{
+	HRESULT hr;
+
+	ID3D11Texture2D* backBuffer;
+	hr = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),(void**)&backBuffer);
+	assert(hr >= 0 && "Get BackBuffer Failed!");
+
+	hr = Device->CreateRenderTargetView(backBuffer, nullptr, &RenderTargetView);
+	assert(hr >= 0 && "Create RTV Failed!");
+
+	Release(backBuffer);
+
+	DeviceContext->OMSetRenderTargets(1, &RenderTargetView, nullptr);
+}
+
+void D3D::CreateViewport()
+{
+	Viewport = new D3D11_VIEWPORT();
+	Viewport->TopLeftX = 0;
+	Viewport->TopLeftY = 0;
+	Viewport->Width = D3dDesc.Width;
+	Viewport->Height= D3dDesc.Height;
+	Viewport->MinDepth = 0;
+	Viewport->MaxDepth = 0;
+
+	DeviceContext->RSSetViewports(1, Viewport);
+}
+
+

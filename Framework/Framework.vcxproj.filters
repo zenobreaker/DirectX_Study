@@ -8,6 +8,7 @@
     <ClCompile Include="Systems\Window.cpp">
       <Filter>Systems</Filter>
     </ClCompile>
+    <ClCompile Include="Renders\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework.h" />
@@ -21,10 +22,16 @@
     <ClInclude Include="Systems\Window.h">
       <Filter>Systems</Filter>
     </ClInclude>
+    <ClInclude Include="Renders\Shader.h">
+      <Filter>Renders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Systems">
       <UniqueIdentifier>{da19919c-9f70-41a3-98c2-3a4849100fe7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renders">
+      <UniqueIdentifier>{92e88131-ab16-4258-a0e9-abe5d0602271}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

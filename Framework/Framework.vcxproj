@@ -149,12 +149,14 @@ copy /Y "$(SolutionDir)Debug\$(ProjectName).pdb" "$(SolutionDir)UnitTest\"</Comm
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Framework.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Renders\Shader.cpp" />
     <ClCompile Include="Systems\D3D.cpp" />
     <ClCompile Include="Systems\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="Framework.h" />
+    <ClInclude Include="Renders\Shader.h" />
     <ClInclude Include="Systems\D3D.h" />
     <ClInclude Include="Systems\IExecutable.h" />
     <ClInclude Include="Systems\Window.h" />

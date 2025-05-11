@@ -25,12 +25,23 @@ public:
 	static const D3DDesc& GetDesc();
 	static void SetDesc(const D3DDesc& InDesc);
 
+public:
+	IDXGISwapChain* GetSwapChain() { return SwapChain; }
+
+	ID3D11Device* GetDevice() { return Device; }
+	ID3D11DeviceContext* GetDeviceContext() { return DeviceContext; }
+
+	void ClearRenderTargetView(Color InColor);
+	void Present();
+
 private:
 	D3D();
 	~D3D();
 
 private:
 	void CreateDevice();
+	void CreateRTV(); 
+	void CreateViewport(); 
 
 private:
 	static D3D* Instance;
@@ -39,8 +50,13 @@ private:
 	static D3DDesc D3dDesc;
 
 private:
-	ID3D11Device* Device;
 	IDXGISwapChain* SwapChain;
+
+	ID3D11Device* Device;
 	ID3D11DeviceContext* DeviceContext;
+
+	ID3D11RenderTargetView* RenderTargetView; 
+
+	D3D11_VIEWPORT* Viewport; 
 };
 

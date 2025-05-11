@@ -10,4 +10,10 @@ public:
 
 	void Tick();
 	void Render();
+
+private:
+	Shader* shader;
+
+	Vector Verticies[2];
+	ID3D11Buffer* VertexBuffer;
 };
