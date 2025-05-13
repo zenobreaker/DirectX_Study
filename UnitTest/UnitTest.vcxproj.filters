@@ -17,6 +17,7 @@
     </ClInclude>
     <ClInclude Include="Line.h" />
     <ClInclude Include="Demo.h" />
+    <ClInclude Include="Line_Circle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -27,5 +28,6 @@
     </ClCompile>
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="Demo.cpp" />
+    <ClCompile Include="Line_Circle.cpp" />
   </ItemGroup>
 </Project>

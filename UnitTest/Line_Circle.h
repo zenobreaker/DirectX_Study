@@ -3,7 +3,7 @@
 #include "Systems/IExecutable.h"
 #include "Framework.h"
 
-class Line : public IExecutable
+class Line_Circle : public IExecutable
 {
 public:
 	void Initialize();

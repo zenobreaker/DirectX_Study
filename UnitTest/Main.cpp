@@ -4,10 +4,12 @@
 
 #include "Demo.h"
 #include "Line.h"
+#include "Line_Circle.h"
 
 void CMain::Initialize()
 {
-	Push_Main(Line);
+	//Push_Main(Line);
+	Push_Main(Line_Circle);
 	//Push_Main(CDemo);
 }
 
