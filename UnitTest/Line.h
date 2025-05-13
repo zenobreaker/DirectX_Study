@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Systems/IExecutable.h"
+#include "Framework.h"
 
 class Line : public IExecutable
 {
@@ -12,8 +13,8 @@ public:
 	void Render();
 
 private:
-	Shader* shader;
+	CShader* shader;
 
-	Vector Verticies[2];
+	FVector Verticies[2];
 	ID3D11Buffer* VertexBuffer;
 };

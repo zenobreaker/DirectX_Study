@@ -1,68 +1,101 @@
 #include "Framework.h"
 #include "Shader.h"
 
-Shader::Shader(wstring file)
-	: file(L"../../_Shaders/" + file)
+CShader::CShader(wstring InFile)
+	: File(L"../../_Shaders/" + InFile)
 {
-	initialStateBlock = new StateBlock();
+	InitialStateBlock = new FStateBlock();
 	{
-		D3D::Get()->GetDeviceContext()->RSGetState(&initialStateBlock->RSRasterizerState);
-		D3D::Get()->GetDeviceContext()->OMGetBlendState(&initialStateBlock->OMBlendState, initialStateBlock->OMBlendFactor, &initialStateBlock->OMSampleMask);
-		D3D::Get()->GetDeviceContext()->OMGetDepthStencilState(&initialStateBlock->OMDepthStencilState, &initialStateBlock->OMStencilRef);
+		CD3D::Get()->GetDeviceContext()->RSGetState(&InitialStateBlock->RSRasterizerState);
+		CD3D::Get()->GetDeviceContext()->OMGetBlendState(&InitialStateBlock->OMBlendState, InitialStateBlock->OMBlendFactor, &InitialStateBlock->OMSampleMask);
+		CD3D::Get()->GetDeviceContext()->OMGetDepthStencilState(&InitialStateBlock->OMDepthStencilState, &InitialStateBlock->OMStencilRef);
 	}
 
 	CreateEffect();
 }
 
-Shader::~Shader()
+CShader::~CShader()
 {
-	for (Technique& temp : techniques)
+	for (FTechnique& temp : Techniques)
 	{
-		for (Pass& pass : temp.Passes)
+		for (FPass& pass : temp.Passes)
 		{
 			Release(pass.InputLayout);
 		}
 	}
 
-	Delete(initialStateBlock);
-	Release(effect);
+	Delete(InitialStateBlock);
+	Release(Effect);
 }
 
-void Shader::CreateEffect()
+void CShader::CreateEffect()
 {
 	ID3DBlob* fxBlob = nullptr;
 
-	ID3DBlob* error = nullptr;
-	INT flag = D3D10_SHADER_ENABLE_BACKWARDS_COMPATIBILITY | D3D10_SHADER_PACK_MATRIX_ROW_MAJOR;
-
-	HRESULT hr = D3DCompileFromFile(file.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, nullptr, "fx_5_0", flag, 0, &fxBlob, &error);
-	if (FAILED(hr))
+	HRESULT hr;
+	if (CPath::GetExtension(File) == L"fx")
 	{
-		if (error != nullptr)
-		{
-			string str = (const char*)error->GetBufferPointer();
-			MessageBoxA(nullptr, str.c_str(), "Shader Error", MB_OK);
-		}
+		ID3DBlob* error = nullptr;
+		INT flag = D3D10_SHADER_ENABLE_BACKWARDS_COMPATIBILITY | D3D10_SHADER_PACK_MATRIX_ROW_MAJOR;
 
-		assert(false && "Fx File not found");
+		hr = D3DCompileFromFile(File.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, nullptr, "fx_5_0", flag, 0, &fxBlob, &error);
+		if (FAILED(hr))
+		{
+			if (error != nullptr)
+			{
+				string str = (const char*)error->GetBufferPointer();
+				MessageBoxA(nullptr, str.c_str(), "Shader Error", MB_OK);
+			}
+
+			assert(false && "Fx File not found");
+		}
+	}
+	else if (CPath::GetExtension(File) == L"fxo")
+	{
+		HANDLE handle = CreateFile(File.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		assert(handle != INVALID_HANDLE_VALUE);
+
+
+		DWORD dataSize = GetFileSize(handle, NULL);
+		assert(dataSize != 0XFFFFFFFF);
+
+
+		void* data = malloc(dataSize);
+
+		DWORD readSize;
+		Check(ReadFile(handle, data, dataSize, &readSize, nullptr));
+
+		CloseHandle(handle);
+		handle = nullptr;
+
+		D3DCreateBlob(dataSize, &fxBlob);
+		memcpy_s(fxBlob->GetBufferPointer(), dataSize, data, dataSize);
+
+		free(data);
+		data = nullptr;
+	}
+	else
+	{
+		Assert(false, "ÀÌÆåÆ® ÆÄÀÏ ¾Æ´Ô");
 	}
 
-	hr = D3DX11CreateEffectFromMemory(fxBlob->GetBufferPointer(), fxBlob->GetBufferSize(), 0, D3D::Get()->GetDevice(), &effect);
+	hr = D3DX11CreateEffectFromMemory(fxBlob->GetBufferPointer(), fxBlob->GetBufferSize(), 0, CD3D::Get()->GetDevice(), &Effect);
 	Check(hr);
 
 
-	effect->GetDesc(&effectDesc);
-	for (UINT t = 0; t < effectDesc.Techniques; t++)
+	Effect->GetDesc(&EffectDesc);
+	for (UINT t = 0; t < EffectDesc.Techniques; t++)
 	{
-		Technique technique;
-		technique.ITechnique = effect->GetTechniqueByIndex(t);
+		FTechnique technique;
+		technique.ITechnique = Effect->GetTechniqueByIndex(t);
 		technique.ITechnique->GetDesc(&technique.Desc);
 
-		string temp;
+		technique.Name = string(technique.Desc.Name);
+		TechniqueNameMap[technique.Name] = t;
 
 		for (UINT p = 0; p < technique.Desc.Passes; p++)
 		{
-			Pass pass;
+			FPass pass;
 			pass.IPass = technique.ITechnique->GetPassByIndex(p);
 			pass.IPass->GetDesc(&pass.Desc);
 			pass.IPass->GetVertexShaderDesc(&pass.PassVsDesc);
@@ -79,43 +112,39 @@ void Shader::CreateEffect()
 			}
 
 			pass.InputLayout = CreateInputLayout(fxBlob, &pass.EffectVsDesc, pass.SignatureDescs);
-			pass.StateBlock = initialStateBlock;
+			pass.StateBlock = InitialStateBlock;
 
 			technique.Passes.push_back(pass);
 		}
 
-		techniques.push_back(technique);
+		Techniques.push_back(technique);
 	}
 
-	for (UINT i = 0; i < effectDesc.ConstantBuffers; i++)
+	for (UINT i = 0; i < EffectDesc.ConstantBuffers; i++)
 	{
 		ID3DX11EffectConstantBuffer* iBuffer;
-		iBuffer = effect->GetConstantBufferByIndex(i);
+		iBuffer = Effect->GetConstantBufferByIndex(i);
 
 		D3DX11_EFFECT_VARIABLE_DESC vDesc;
 		iBuffer->GetDesc(&vDesc);
-
-		int a = 0;
 	}
 
-	for (UINT i = 0; i < effectDesc.GlobalVariables; i++)
+	for (UINT i = 0; i < EffectDesc.GlobalVariables; i++)
 	{
 		ID3DX11EffectVariable* iVariable;
-		iVariable = effect->GetVariableByIndex(i);
+		iVariable = Effect->GetVariableByIndex(i);
 
 		D3DX11_EFFECT_VARIABLE_DESC vDesc;
 		iVariable->GetDesc(&vDesc);
-
-		int a = 0;
 	}
 
 	Release(fxBlob);
 }
 
-ID3D11InputLayout* Shader::CreateInputLayout(ID3DBlob* fxBlob, D3DX11_EFFECT_SHADER_DESC* effectVsDesc, vector<D3D11_SIGNATURE_PARAMETER_DESC>& params)
+ID3D11InputLayout* CShader::CreateInputLayout(ID3DBlob* InBlob, D3DX11_EFFECT_SHADER_DESC* InDesc, vector<D3D11_SIGNATURE_PARAMETER_DESC>& InParams)
 {
 	std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDesc;
-	for (D3D11_SIGNATURE_PARAMETER_DESC& paramDesc : params)
+	for (D3D11_SIGNATURE_PARAMETER_DESC& paramDesc : InParams)
 	{
 		D3D11_INPUT_ELEMENT_DESC elementDesc;
 		elementDesc.SemanticName = paramDesc.SemanticName;
@@ -168,18 +197,26 @@ ID3D11InputLayout* Shader::CreateInputLayout(ID3DBlob* fxBlob, D3DX11_EFFECT_SHA
 		if (name == "POSITION")
 			elementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
 
+		if (name == "INSTANCE")
+		{
+			elementDesc.InputSlot = INSTANCE_SLOT_NUMBER;
+			elementDesc.InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA;
+			elementDesc.InstanceDataStepRate = 1;
+		}
+
+
 		if ((name.substr(0, 3) == "SV_") == false)
 			inputLayoutDesc.push_back(elementDesc);
 	}
 
 
-	const void* pCode = effectVsDesc->pBytecode;
-	UINT pCodeSize = effectVsDesc->BytecodeLength;
+	const void* pCode = InDesc->pBytecode;
+	UINT pCodeSize = InDesc->BytecodeLength;
 
 	if (inputLayoutDesc.size() > 0)
 	{
 		ID3D11InputLayout* inputLayout = nullptr;
-		HRESULT hr = D3D::Get()->GetDevice()->CreateInputLayout
+		HRESULT hr = CD3D::Get()->GetDevice()->CreateInputLayout
 		(
 			&inputLayoutDesc[0]
 			, inputLayoutDesc.size()
@@ -195,145 +232,232 @@ ID3D11InputLayout* Shader::CreateInputLayout(ID3DBlob* fxBlob, D3DX11_EFFECT_SHA
 	return nullptr;
 }
 
-void Shader::Pass::Draw(UINT vertexCount, UINT startVertexLocation)
+void CShader::SetTechniqueByName(string InName)
+{
+	auto iter = TechniqueNameMap.find(InName);
+	assert(iter != TechniqueNameMap.end());
+
+	SetTechniqueNumber(iter->second);
+}
+
+void CShader::FPass::Draw(UINT InVertexCount, UINT IntartVertexLocation)
 {
 	BeginDraw();
 	{
-		D3D::Get()->GetDeviceContext()->Draw(vertexCount, startVertexLocation);
+		CD3D::Get()->GetDeviceContext()->Draw(InVertexCount, IntartVertexLocation);
 	}
 	EndDraw();
 }
 
-void Shader::Pass::BeginDraw()
+void CShader::FPass::DrawIndexed(UINT InIndexCount, UINT InStartIndexLocation, int InBaseVertexLocation)
+{
+	BeginDraw();
+	{
+		CD3D::Get()->GetDeviceContext()->DrawIndexed(InIndexCount, InStartIndexLocation, InBaseVertexLocation);
+	}
+	EndDraw();
+}
+
+void CShader::FPass::DrawInstanced(UINT vertexCountPerInstance, UINT instanceCount, UINT startVertexLocation, UINT startInstanceLocation)
+{
+	BeginDraw();
+	{
+		CD3D::Get()->GetDeviceContext()->DrawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
+	}
+	EndDraw();
+}
+
+void CShader::FPass::DrawIndexedInstanced(UINT indexCountPerInstance, UINT instanceCount, UINT startIndexLocation, INT baseVertexLocation, UINT startInstanceLocation)
+{
+	BeginDraw();
+	{
+		CD3D::Get()->GetDeviceContext()->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startIndexLocation);
+	}
+	EndDraw();
+}
+
+void CShader::FPass::BeginDraw()
 {
 	IPass->ComputeStateBlockMask(&StateBlockMask);
 
-	D3D::Get()->GetDeviceContext()->IASetInputLayout(InputLayout);
-	IPass->Apply(0, D3D::Get()->GetDeviceContext());
+	CD3D::Get()->GetDeviceContext()->IASetInputLayout(InputLayout);
+	IPass->Apply(0, CD3D::Get()->GetDeviceContext());
 }
 
-void Shader::Pass::EndDraw()
+void CShader::FPass::EndDraw()
 {
 	if (StateBlockMask.RSRasterizerState == 1)
-		D3D::Get()->GetDeviceContext()->RSSetState(StateBlock->RSRasterizerState);
+		CD3D::Get()->GetDeviceContext()->RSSetState(StateBlock->RSRasterizerState);
 
 	if (StateBlockMask.OMDepthStencilState == 1)
-		D3D::Get()->GetDeviceContext()->OMSetDepthStencilState(StateBlock->OMDepthStencilState, StateBlock->OMStencilRef);
+		CD3D::Get()->GetDeviceContext()->OMSetDepthStencilState(StateBlock->OMDepthStencilState, StateBlock->OMStencilRef);
 
 	if (StateBlockMask.OMBlendState == 1)
-		D3D::Get()->GetDeviceContext()->OMSetBlendState(StateBlock->OMBlendState, StateBlock->OMBlendFactor, StateBlock->OMSampleMask);
+		CD3D::Get()->GetDeviceContext()->OMSetBlendState(StateBlock->OMBlendState, StateBlock->OMBlendFactor, StateBlock->OMSampleMask);
 
-	D3D::Get()->GetDeviceContext()->HSSetShader(nullptr, nullptr, 0);
-	D3D::Get()->GetDeviceContext()->DSSetShader(nullptr, nullptr, 0);
-	D3D::Get()->GetDeviceContext()->GSSetShader(nullptr, nullptr, 0);
+	CD3D::Get()->GetDeviceContext()->HSSetShader(nullptr, nullptr, 0);
+	CD3D::Get()->GetDeviceContext()->DSSetShader(nullptr, nullptr, 0);
+	CD3D::Get()->GetDeviceContext()->GSSetShader(nullptr, nullptr, 0);
 }
 
-void Shader::Pass::Dispatch(UINT x, UINT y, UINT z)
+void CShader::FPass::Dispatch(UINT InX, UINT InY, UINT InZ)
 {
-	IPass->Apply(0, D3D::Get()->GetDeviceContext());
-	D3D::Get()->GetDeviceContext()->Dispatch(x, y, z);
+	IPass->Apply(0, CD3D::Get()->GetDeviceContext());
+	CD3D::Get()->GetDeviceContext()->Dispatch(InX, InY, InZ);
 
 
 	ID3D11ShaderResourceView* null[1] = { 0 };
-	D3D::Get()->GetDeviceContext()->CSSetShaderResources(0, 1, null);
+	CD3D::Get()->GetDeviceContext()->CSSetShaderResources(0, 1, null);
 
 	ID3D11UnorderedAccessView* nullUav[1] = { 0 };
-	D3D::Get()->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, nullUav, nullptr);
+	CD3D::Get()->GetDeviceContext()->CSSetUnorderedAccessViews(0, 1, nullUav, nullptr);
 
-	D3D::Get()->GetDeviceContext()->CSSetShader(nullptr, nullptr, 0);
+	CD3D::Get()->GetDeviceContext()->CSSetShader(nullptr, nullptr, 0);
 }
 
-void Shader::Technique::Draw(UINT pass, UINT vertexCount, UINT startVertexLocation)
+void CShader::Draw(UINT InVertexCount, UINT InStartVertexLocation)
 {
-	Passes[pass].Draw(vertexCount, startVertexLocation);
+	Techniques[TechniqueNumber].Passes[PassNumber].Draw(InVertexCount, InStartVertexLocation);
 }
 
-void Shader::Technique::Dispatch(UINT pass, UINT x, UINT y, UINT z)
+void CShader::DrawIndexed(UINT InIndexCount, UINT InStartIndexLocation, int InBaseVertexLocation)
 {
-	Passes[pass].Dispatch(x, y, z);
+	Techniques[TechniqueNumber].Passes[PassNumber].DrawIndexed(InIndexCount, InStartIndexLocation, InBaseVertexLocation);
 }
 
-void Shader::Draw(UINT technique, UINT pass, UINT vertexCount, UINT startVertexLocation)
+void CShader::DrawInstanced(UINT vertexCountPerInstance, UINT instanceCount, UINT startVertexLocation, UINT startInstanceLocation)
 {
-	techniques[technique].Passes[pass].Draw(vertexCount, startVertexLocation);
+	Techniques[TechniqueNumber].Passes[PassNumber].DrawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
 }
 
-void Shader::Dispatch(UINT technique, UINT pass, UINT x, UINT y, UINT z)
+void CShader::DrawIndexedInstanced(UINT indexCountPerInstance, UINT instanceCount, UINT startIndexLocation, INT baseVertexLocation, UINT startInstanceLocation)
 {
-	techniques[technique].Passes[pass].Dispatch(x, y, z);
+	Techniques[TechniqueNumber].Passes[PassNumber].DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
 }
 
-ID3DX11EffectVariable* Shader::Variable(string name)
+void CShader::Dispatch(UINT InTechnique, UINT InPass, UINT InX, UINT InY, UINT InZ)
 {
-	return effect->GetVariableByName(name.c_str());
+	Techniques[TechniqueNumber].Passes[PassNumber].Dispatch(InX, InY, InZ);
 }
 
-ID3DX11EffectScalarVariable* Shader::AsScalar(string name)
+ID3DX11EffectVariable* CShader::Variable(string InName)
 {
-	return effect->GetVariableByName(name.c_str())->AsScalar();
+	return Effect->GetVariableByName(InName.c_str());
 }
 
-ID3DX11EffectVectorVariable* Shader::AsVector(string name)
+ID3DX11EffectScalarVariable* CShader::AsScalar(string InName)
 {
-	return effect->GetVariableByName(name.c_str())->AsVector();
+	return Effect->GetVariableByName(InName.c_str())->AsScalar();
 }
 
-ID3DX11EffectMatrixVariable* Shader::AsMatrix(string name)
+ID3DX11EffectVectorVariable* CShader::AsVector(string InName)
 {
-	return effect->GetVariableByName(name.c_str())->AsMatrix();
+	return Effect->GetVariableByName(InName.c_str())->AsVector();
 }
 
-ID3DX11EffectStringVariable* Shader::AsString(string name)
+ID3DX11EffectMatrixVariable* CShader::AsMatrix(string InName)
 {
-	return effect->GetVariableByName(name.c_str())->AsString();
+	return Effect->GetVariableByName(InName.c_str())->AsMatrix();
 }
 
-ID3DX11EffectShaderResourceVariable* Shader::AsSRV(string name)
+ID3DX11EffectStringVariable* CShader::AsString(string InName)
 {
-	return effect->GetVariableByName(name.c_str())->AsShaderResource();
+	return Effect->GetVariableByName(InName.c_str())->AsString();
 }
 
-ID3DX11EffectRenderTargetViewVariable* Shader::AsRTV(string name)
+ID3DX11EffectShaderResourceVariable* CShader::AsSRV(string InName)
 {
-	return effect->GetVariableByName(name.c_str())->AsRenderTargetView();
+	return Effect->GetVariableByName(InName.c_str())->AsShaderResource();
 }
 
-ID3DX11EffectDepthStencilViewVariable* Shader::AsDSV(string name)
+ID3DX11EffectRenderTargetViewVariable* CShader::AsRTV(string InName)
 {
-	return effect->GetVariableByName(name.c_str())->AsDepthStencilView();
+	return Effect->GetVariableByName(InName.c_str())->AsRenderTargetView();
 }
 
-ID3DX11EffectConstantBuffer* Shader::AsConstantBuffer(string name)
+ID3DX11EffectDepthStencilViewVariable* CShader::AsDSV(string InName)
 {
-	return effect->GetConstantBufferByName(name.c_str());
+	return Effect->GetVariableByName(InName.c_str())->AsDepthStencilView();
 }
 
-ID3DX11EffectShaderVariable* Shader::AsShader(string name)
+ID3DX11EffectConstantBuffer* CShader::AsConstantBuffer(string InName)
 {
-	return effect->GetVariableByName(name.c_str())->AsShader();
+	return Effect->GetConstantBufferByName(InName.c_str());
 }
 
-ID3DX11EffectBlendVariable* Shader::AsBlend(string name)
+ID3DX11EffectShaderVariable* CShader::AsShader(string InName)
 {
-	return effect->GetVariableByName(name.c_str())->AsBlend();
+	return Effect->GetVariableByName(InName.c_str())->AsShader();
 }
 
-ID3DX11EffectDepthStencilVariable* Shader::AsDepthStencil(string name)
+ID3DX11EffectBlendVariable* CShader::AsBlend(string InName)
 {
-	return effect->GetVariableByName(name.c_str())->AsDepthStencil();
+	return Effect->GetVariableByName(InName.c_str())->AsBlend();
 }
 
-ID3DX11EffectRasterizerVariable* Shader::AsRasterizer(string name)
+ID3DX11EffectDepthStencilVariable* CShader::AsDepthStencil(string InName)
 {
-	return effect->GetVariableByName(name.c_str())->AsRasterizer();
+	return Effect->GetVariableByName(InName.c_str())->AsDepthStencil();
 }
 
-ID3DX11EffectSamplerVariable* Shader::AsSampler(string name)
+ID3DX11EffectRasterizerVariable* CShader::AsRasterizer(string InName)
 {
-	return effect->GetVariableByName(name.c_str())->AsSampler();
+	return Effect->GetVariableByName(InName.c_str())->AsRasterizer();
 }
 
-ID3DX11EffectUnorderedAccessViewVariable* Shader::AsUAV(string name)
+ID3DX11EffectSamplerVariable* CShader::AsSampler(string InName)
 {
-	return effect->GetVariableByName(name.c_str())->AsUnorderedAccessView();
+	return Effect->GetVariableByName(InName.c_str())->AsSampler();
+}
+
+ID3DX11EffectUnorderedAccessViewVariable* CShader::AsUAV(string InName)
+{
+	return Effect->GetVariableByName(InName.c_str())->AsUnorderedAccessView();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+CShaders* CShaders::Instance = nullptr;
+
+void CShaders::Create()
+{
+	assert(Instance == nullptr);
+
+	Instance = new CShaders();
+}
+
+void CShaders::Destroy()
+{
+	assert(Instance != nullptr);
+
+	Delete(Instance);
+}
+
+CShaders* CShaders::Get()
+{
+	return Instance;
+}
+
+CShaders::CShaders()
+{
+}
+
+CShaders::~CShaders()
+{
+	for (pair<wstring, CShader*> p : ShaderMap)
+		Delete(p.second);
+}
+
+CShader* CShaders::GetShader(wstring InFileName)
+{
+	wstring name = CPath::GetFileNameWithoutExtension(InFileName);
+	auto result = ShaderMap.find(name);
+
+	if (result != ShaderMap.end())
+		return result->second;
+
+	CShader* shader = new CShader(InFileName);
+	ShaderMap.insert(pair<wstring, CShader*>(name, shader));
+
+	return shader;
 }

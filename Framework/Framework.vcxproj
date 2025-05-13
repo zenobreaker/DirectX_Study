@@ -78,7 +78,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>./;../../_Libraries</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
@@ -145,21 +145,108 @@ copy /Y "$(SolutionDir)Debug\$(ProjectName).pdb" "$(SolutionDir)UnitTest\"</Comm
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core\Color.cpp" />
+    <ClCompile Include="Core\Math.cpp" />
+    <ClCompile Include="Core\Matrix.cpp" />
+    <ClCompile Include="Core\Plane.cpp" />
+    <ClCompile Include="Core\Point.cpp" />
+    <ClCompile Include="Core\Quaternion.cpp" />
+    <ClCompile Include="Core\Vector.cpp" />
+    <ClCompile Include="Core\Vector2D.cpp" />
+    <ClCompile Include="Core\Vector4.cpp" />
+    <ClCompile Include="Environment\Rain.cpp" />
+    <ClCompile Include="Environment\Sky.cpp" />
+    <ClCompile Include="Environment\Snow.cpp" />
+    <ClCompile Include="Environment\Sun.cpp" />
+    <ClCompile Include="Environment\Terrain.cpp" />
     <ClCompile Include="Framework.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Framework.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Model\AnimRender.cpp" />
+    <ClCompile Include="Model\MeshRender.cpp" />
+    <ClCompile Include="Model\ModelAnimation.cpp" />
+    <ClCompile Include="Model\ModelBone.cpp" />
+    <ClCompile Include="Model\ModelMesh.cpp" />
+    <ClCompile Include="PostEffects\Bloom.cpp" />
+    <ClCompile Include="PostEffects\Blur.cpp" />
+    <ClCompile Include="PostEffects\PostEffect.cpp" />
+    <ClCompile Include="Renders\Buffers.cpp" />
+    <ClCompile Include="Renders\Context.cpp" />
+    <ClCompile Include="Renders\Frame.cpp" />
+    <ClCompile Include="Renders\Lighting.cpp" />
+    <ClCompile Include="Renders\Material.cpp" />
+    <ClCompile Include="Renders\Projector.cpp" />
+    <ClCompile Include="Renders\Render2D.cpp" />
+    <ClCompile Include="Renders\Renderer.cpp" />
     <ClCompile Include="Renders\Shader.cpp" />
+    <ClCompile Include="Renders\Texture.cpp" />
+    <ClCompile Include="Renders\Transform.cpp" />
     <ClCompile Include="Systems\D3D.cpp" />
+    <ClCompile Include="Systems\Gui.cpp" />
+    <ClCompile Include="Systems\Keyboard.cpp" />
+    <ClCompile Include="Systems\Mouse.cpp" />
+    <ClCompile Include="Systems\Timer.cpp" />
     <ClCompile Include="Systems\Window.cpp" />
+    <ClCompile Include="Utilities\BinaryFile.cpp" />
+    <ClCompile Include="Utilities\Path.cpp" />
+    <ClCompile Include="Utilities\String.cpp" />
+    <ClCompile Include="Viewer\Camera.cpp" />
+    <ClCompile Include="Viewer\DepthStencil.cpp" />
+    <ClCompile Include="Viewer\RenderTarget.cpp" />
+    <ClCompile Include="Viewer\Viewport.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Core\Color.h" />
+    <ClInclude Include="Core\Math.h" />
+    <ClInclude Include="Core\Matrix.h" />
+    <ClInclude Include="Core\Plane.h" />
+    <ClInclude Include="Core\Point.h" />
+    <ClInclude Include="Core\Quaternion.h" />
+    <ClInclude Include="Core\Vector.h" />
+    <ClInclude Include="Core\Vector2D.h" />
+    <ClInclude Include="Core\Vector4.h" />
     <ClInclude Include="Definitions.h" />
+    <ClInclude Include="Environment\Rain.h" />
+    <ClInclude Include="Environment\Sky.h" />
+    <ClInclude Include="Environment\Snow.h" />
+    <ClInclude Include="Environment\Sun.h" />
+    <ClInclude Include="Environment\Terrain.h" />
     <ClInclude Include="Framework.h" />
+    <ClInclude Include="Model\AnimRender.h" />
+    <ClInclude Include="Model\MeshRender.h" />
+    <ClInclude Include="Model\ModelAnimation.h" />
+    <ClInclude Include="Model\ModelBone.h" />
+    <ClInclude Include="Model\ModelMesh.h" />
+    <ClInclude Include="PostEffects\Bloom.h" />
+    <ClInclude Include="PostEffects\Blur.h" />
+    <ClInclude Include="PostEffects\PostEffect.h" />
+    <ClInclude Include="Renders\Buffers.h" />
+    <ClInclude Include="Renders\Context.h" />
+    <ClInclude Include="Renders\Frame.h" />
+    <ClInclude Include="Renders\Lighting.h" />
+    <ClInclude Include="Renders\Material.h" />
+    <ClInclude Include="Renders\Projector.h" />
+    <ClInclude Include="Renders\Render2D.h" />
+    <ClInclude Include="Renders\Renderer.h" />
     <ClInclude Include="Renders\Shader.h" />
+    <ClInclude Include="Renders\Texture.h" />
+    <ClInclude Include="Renders\Transform.h" />
+    <ClInclude Include="Renders\VertexLayout.h" />
     <ClInclude Include="Systems\D3D.h" />
+    <ClInclude Include="Systems\Gui.h" />
     <ClInclude Include="Systems\IExecutable.h" />
+    <ClInclude Include="Systems\Keyboard.h" />
+    <ClInclude Include="Systems\Mouse.h" />
+    <ClInclude Include="Systems\Timer.h" />
     <ClInclude Include="Systems\Window.h" />
+    <ClInclude Include="Utilities\BinaryFile.h" />
+    <ClInclude Include="Utilities\Path.h" />
+    <ClInclude Include="Utilities\String.h" />
+    <ClInclude Include="Viewer\Camera.h" />
+    <ClInclude Include="Viewer\DepthStencil.h" />
+    <ClInclude Include="Viewer\RenderTarget.h" />
+    <ClInclude Include="Viewer\Viewport.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

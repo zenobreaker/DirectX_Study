@@ -1,15 +1,15 @@
 #pragma once
 
-class Window
+class CWindow
 {
 public:
-	static WPARAM Run(class IExecutable* InMain);
+	static WPARAM Run(class IExecutable* InMain, bool bGameLoop = true);
 
 private:
 	static void Create();
 	static void Destroy();
 
-	static LRESULT CALLBACK WndProc(HWND InHanlde, UINT InMessage, WPARAM InwParam, LPARAM InLParam);
+	static LRESULT CALLBACK WndProc(HWND InHandle, UINT InMessage, WPARAM InwParam, LPARAM InlParam);
 
 	static void MainRender();
 

@@ -2,16 +2,18 @@
 #include "Main.h"
 #include "Systems/Window.h"
 
+#include "Demo.h"
 #include "Line.h"
 
-void Main::Initialize()
+void CMain::Initialize()
 {
-	Push(new Line());
+	Push_Main(Line);
+	//Push_Main(CDemo);
 }
 
-void Main::Destroy()
+void CMain::Destroy()
 {
-	for (IExecutable* execute : executes)
+	for (IExecutable* execute : Executes)
 	{
 		execute->Destroy();
 
@@ -19,45 +21,57 @@ void Main::Destroy()
 	}
 }
 
-void Main::Tick()
+void CMain::Tick()
 {
-	for (IExecutable* execute : executes)
+	for (IExecutable* execute : Executes)
 		execute->Tick();
 }
 
-void Main::Render()
+void CMain::PreRender()
 {
-	for (IExecutable* execute : executes)
+	for (IExecutable* execute : Executes)
+		execute->PreRender();
+}
+
+void CMain::Render()
+{
+	for (IExecutable* execute : Executes)
 		execute->Render();
 }
 
-void Main::Push(IExecutable* exceute)
+void CMain::PostRender()
 {
-	executes.push_back(exceute);
-
-	exceute->Initialize();
+	for (IExecutable* execute : Executes)
+		execute->PostRender();
 }
 
-
-
-int WINAPI WinMain(HINSTANCE InInstance, HINSTANCE InPrevInstance, LPSTR InParam, int comment)
+void CMain::Push(IExecutable* InExecutable)
 {
-	D3DDesc desc;
+	Executes.push_back(InExecutable);
+
+	InExecutable->Initialize();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+int WINAPI WinMain(HINSTANCE InInstance, HINSTANCE InPrevInstance, LPSTR InParam, int command)
+{
+	FD3DDesc desc;
 	desc.AppName = L"D3D Game";
 	desc.Instance = InInstance;
 	desc.Handle = nullptr;
 
-	desc.Width = 1280;
-	desc.Height = 720;
+	desc.Width = 1600;
+	desc.Height = 900;
 
-	desc.Background = Color(0.3f, 0.3f, 0.3f, 1.0f);
+	desc.Background = FColor(0.3f, 0.3f, 0.3f, 1.0f);
 
-	D3D::SetDesc(desc);
+	CD3D::SetDesc(desc);
 
-	Main* main = new Main();
-	WPARAM wParam = Window::Run(main);
 
-	Delete(main)
+	CMain* main = new CMain();
+	WPARAM wParam = CWindow::Run(main);
+	Delete(main);
 
 	return wParam;
 }

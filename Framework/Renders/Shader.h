@@ -1,47 +1,66 @@
 #pragma once
 
-class Shader
+class CShader
 {
-public:
-	friend struct Pass;
+private:
+	friend class CShaders;
 
 public:
-	Shader(wstring file);
-	~Shader();
+	CShader(wstring InFile);
+	~CShader();
 
-	void Draw(UINT technique, UINT pass, UINT vertexCount, UINT startVertexLocation = 0);
-	void Dispatch(UINT technique, UINT pass, UINT x, UINT y, UINT z);
+public:
+	void Draw(UINT InVertexCount, UINT IntartVertexLocation = 0);
+	void DrawIndexed(UINT InIndexCount, UINT InStartIndexLocation = 0, int InBaseVertexLocation = 0);
+	void DrawInstanced(UINT vertexCountPerInstance, UINT instanceCount, UINT startVertexLocation = 0, UINT startInstanceLocation = 0);
+	void DrawIndexedInstanced(UINT indexCountPerInstance, UINT instanceCount, UINT startIndexLocation = 0, INT baseVertexLocation = 0, UINT startInstanceLocation = 0);
+
+	void Dispatch(UINT InTechnique, UINT InPass, UINT InX, UINT InY, UINT InZ);
 
 
-	ID3DX11EffectVariable* Variable(string name);
-	ID3DX11EffectScalarVariable* AsScalar(string name);
-	ID3DX11EffectVectorVariable* AsVector(string name);
-	ID3DX11EffectMatrixVariable* AsMatrix(string name);
-	ID3DX11EffectStringVariable* AsString(string name);
-	ID3DX11EffectShaderResourceVariable* AsSRV(string name);
-	ID3DX11EffectRenderTargetViewVariable* AsRTV(string name);
-	ID3DX11EffectDepthStencilViewVariable* AsDSV(string name);
-	ID3DX11EffectUnorderedAccessViewVariable* AsUAV(string name);
-	ID3DX11EffectConstantBuffer* AsConstantBuffer(string name);
-	ID3DX11EffectShaderVariable* AsShader(string name);
-	ID3DX11EffectBlendVariable* AsBlend(string name);
-	ID3DX11EffectDepthStencilVariable* AsDepthStencil(string name);
-	ID3DX11EffectRasterizerVariable* AsRasterizer(string name);
-	ID3DX11EffectSamplerVariable* AsSampler(string name);
+	ID3DX11EffectVariable* Variable(string InName);
+	ID3DX11EffectScalarVariable* AsScalar(string InName);
+	ID3DX11EffectVectorVariable* AsVector(string InName);
+	ID3DX11EffectMatrixVariable* AsMatrix(string InName);
+	ID3DX11EffectStringVariable* AsString(string InName);
+	ID3DX11EffectShaderResourceVariable* AsSRV(string InName);
+	ID3DX11EffectRenderTargetViewVariable* AsRTV(string InName);
+	ID3DX11EffectDepthStencilViewVariable* AsDSV(string InName);
+	ID3DX11EffectUnorderedAccessViewVariable* AsUAV(string InName);
+	ID3DX11EffectConstantBuffer* AsConstantBuffer(string InName);
+	ID3DX11EffectShaderVariable* AsShader(string InName);
+	ID3DX11EffectBlendVariable* AsBlend(string InName);
+	ID3DX11EffectDepthStencilVariable* AsDepthStencil(string InName);
+	ID3DX11EffectRasterizerVariable* AsRasterizer(string InName);
+	ID3DX11EffectSamplerVariable* AsSampler(string InName);
 
+public:
+	UINT GetTechniqueNumber() { return TechniqueNumber; }
+	UINT GetPassNumber() { return PassNumber; }
+
+	void SetTechniqueByName(string InName);
+	void SetTechniqueNumber(UINT InNumber) { TechniqueNumber = InNumber; }
+	void SetPassNumber(UINT InNumber) { PassNumber = InNumber; }
+
+	UINT GetTechniqueCount() { return Techniques.size(); }
+	UINT GetPassCount(UINT InTechnique = 0) { return Techniques[InTechnique].Passes.size(); }
+
+private:
+	UINT TechniqueNumber = 0;
+	UINT PassNumber = 0;
 
 private:
 	void CreateEffect();
-	ID3D11InputLayout* CreateInputLayout(ID3DBlob* fxBlob, D3DX11_EFFECT_SHADER_DESC* effectVsDesc, vector<D3D11_SIGNATURE_PARAMETER_DESC>& params);
+	ID3D11InputLayout* CreateInputLayout(ID3DBlob* InBlob, D3DX11_EFFECT_SHADER_DESC* InDesc, vector<D3D11_SIGNATURE_PARAMETER_DESC>& InParams);
 
 private:
-	wstring file;
+	wstring File;
 
-	ID3DX11Effect* effect;
-	D3DX11_EFFECT_DESC effectDesc;
+	ID3DX11Effect* Effect;
+	D3DX11_EFFECT_DESC EffectDesc;
 
 private:
-	struct StateBlock
+	struct FStateBlock
 	{
 		ID3D11RasterizerState* RSRasterizerState;
 
@@ -51,10 +70,10 @@ private:
 		ID3D11DepthStencilState* OMDepthStencilState;
 		UINT OMStencilRef;
 	};
-	StateBlock* initialStateBlock;
+	FStateBlock* InitialStateBlock;
 
 private:
-	struct Pass
+	struct FPass
 	{
 		wstring Name;
 		ID3DX11EffectPass* IPass;
@@ -66,27 +85,51 @@ private:
 		vector<D3D11_SIGNATURE_PARAMETER_DESC> SignatureDescs;
 
 		D3DX11_STATE_BLOCK_MASK StateBlockMask;
-		StateBlock* StateBlock;
+		FStateBlock* StateBlock;
 
-		void Draw(UINT vertexCount, UINT startVertexLocation = 0);
+		void Draw(UINT InVertexCount, UINT InStartVertexLocation = 0);
+		void DrawIndexed(UINT InIndexCount, UINT InStartIndexLocation = 0, int InBaseVertexLocation = 0);
+		void DrawInstanced(UINT vertexCountPerInstance, UINT instanceCount, UINT startVertexLocation = 0, UINT startInstanceLocation = 0);
+		void DrawIndexedInstanced(UINT indexCountPerInstance, UINT instanceCount, UINT startIndexLocation = 0, INT baseVertexLocation = 0, UINT startInstanceLocation = 0);
 
 		void BeginDraw();
 		void EndDraw();
 
-		void Dispatch(UINT x, UINT y, UINT z);
+		void Dispatch(UINT InX, UINT InY, UINT InZ);
 	};
 
-	struct Technique
+	struct FTechnique
 	{
-		wstring Name;
+		string Name;
 		D3DX11_TECHNIQUE_DESC Desc;
 		ID3DX11EffectTechnique* ITechnique;
 
-		vector<Pass> Passes;
-
-		void Draw(UINT pass, UINT vertexCount, UINT startVertexLocation = 0);
-
-		void Dispatch(UINT pass, UINT x, UINT y, UINT z);
+		vector<FPass> Passes;
 	};
-	vector<Technique> techniques;
+	vector<FTechnique> Techniques;
+	map<string, UINT> TechniqueNameMap;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+class CShaders
+{
+public:
+	static void Create();
+	static void Destroy();
+
+	static CShaders* Get();
+
+private:
+	CShaders();
+	~CShaders();
+
+private:
+	static CShaders* Instance;
+
+public:
+	CShader* GetShader(wstring InFileName);
+
+private:
+	map<wstring, CShader*> ShaderMap;
 };

@@ -1,53 +1,55 @@
 #pragma once
 
-struct D3DDesc
+struct FD3DDesc
 {
-	wstring AppName;	 // 애플리케이션 이름 
-	HINSTANCE Instance;	 // 프로그램의 시작 주소 
-	HWND Handle;		 // 윈도우 창
+	wstring AppName;
+	HINSTANCE Instance;
+	HWND Handle;
 
-	float Width;		// 창의 가로
-	float Height;		// 창의 높이
+	float Width;
+	float Height;
 
-	Color Background;
+	FColor Background;
 };
 
-class D3D
+class CD3D
 {
 public:
-	static D3D* Get();
+	static CD3D* Get();
 
 public:
 	static void Create();
 	static void Destroy();
 
 public:
-	static const D3DDesc& GetDesc();
-	static void SetDesc(const D3DDesc& InDesc);
-
-public:
-	IDXGISwapChain* GetSwapChain() { return SwapChain; }
-
-	ID3D11Device* GetDevice() { return Device; }
-	ID3D11DeviceContext* GetDeviceContext() { return DeviceContext; }
-
-	void ClearRenderTargetView(Color InColor);
-	void Present();
-
-private:
-	D3D();
-	~D3D();
+	static const FD3DDesc& GetDesc();
+	static void SetDesc(const FD3DDesc& InDesc);
 
 private:
 	void CreateDevice();
-	void CreateRTV(); 
-	void CreateViewport(); 
+	void CreateRTV();
+	void CreateDSV();
+
+public:
+	ID3D11Device* GetDevice() { return Device; }
+	ID3D11DeviceContext* GetDeviceContext() { return DeviceContext; }
+
+	void SetRenderTarget();
+	void ClearRenderTargetView(FColor InColor);
+	void ClearDepthStencilView();
+	void Present();
+
+	void ResizeScreen(float InWidth, float InHeight);
 
 private:
-	static D3D* Instance;
+	CD3D();
+	~CD3D();
 
 private:
-	static D3DDesc D3dDesc;
+	static CD3D* Instance;
+
+private:
+	static FD3DDesc D3dDesc;
 
 private:
 	IDXGISwapChain* SwapChain;
@@ -55,8 +57,9 @@ private:
 	ID3D11Device* Device;
 	ID3D11DeviceContext* DeviceContext;
 
-	ID3D11RenderTargetView* RenderTargetView; 
+	ID3D11RenderTargetView* RenderTargetView;
 
-	D3D11_VIEWPORT* Viewport; 
+	ID3D11Texture2D* DSV_Texture;
+	ID3D11DepthStencilView* DepthStencilView;
 };
 
