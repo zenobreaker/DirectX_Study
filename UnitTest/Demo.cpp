@@ -1,7 +1,8 @@
 #include "Pch.h"
 #include "Demo.h"
 
-const  int CDemo::VertexCount = 6;
+const  int CDemo::VertexCount = 4;
+const  int CDemo::IndexCount = 6;
 
 void CDemo::Initialize()
 {
@@ -9,26 +10,47 @@ void CDemo::Initialize()
 
 	Vertices = new FVertex[VertexCount];
 
-	Vertices[0].Position = FVector(+0.0f, +0.0f, +0.0f);
-	Vertices[1].Position = FVector(+0.0f, +0.5f, +0.0f);
-	Vertices[2].Position = FVector(+0.5f, +0.0f, +0.0f);
-
-	Vertices[3].Position = FVector(+0.5f, +0.0f, +0.0f);
-	Vertices[4].Position = FVector(+0.0f, +0.5f, +0.0f);
-	Vertices[5].Position = FVector(+0.5f, +0.5f, +0.0f);
+	Vertices[0].Position = FVector(-0.5f, -0.5f, +0.0f);
+	Vertices[1].Position = FVector(-0.5f, +0.5f, +0.0f);
+	Vertices[2].Position = FVector(+0.5f, -0.5f, +0.0f);
+	Vertices[3].Position = FVector(+0.5f, +0.5f, +0.0f);
 
 
-	D3D11_BUFFER_DESC desc;
-	ZeroMemory(&desc, sizeof(D3D11_BUFFER_DESC));
-	desc.ByteWidth = sizeof(FVertex) * VertexCount;
-	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	// Vertex Buffer 
+	{
+		D3D11_BUFFER_DESC desc;
+		ZeroMemory(&desc, sizeof(D3D11_BUFFER_DESC));
+		desc.ByteWidth = sizeof(FVertex) * VertexCount;
+		desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
-	D3D11_SUBRESOURCE_DATA subResource;
-	ZeroMemory(&subResource, sizeof(D3D11_SUBRESOURCE_DATA));
+		D3D11_SUBRESOURCE_DATA subResource;
+		ZeroMemory(&subResource, sizeof(D3D11_SUBRESOURCE_DATA));
 
-	subResource.pSysMem = Vertices;
-	CD3D::Get()->GetDevice()->CreateBuffer(&desc, &subResource, &VertexBuffer);
+		subResource.pSysMem = Vertices;
+		CD3D::Get()->GetDevice()->CreateBuffer(&desc, &subResource, &VertexBuffer);
 
+	}
+
+	Indices = new UINT[IndexCount]
+	{
+		0,1,2,2,1,3
+	};
+
+	//Index Buffer
+	{
+		D3D11_BUFFER_DESC desc;
+		ZeroMemory(&desc, sizeof(D3D11_BUFFER_DESC));
+		desc.ByteWidth = sizeof(UINT) * IndexCount;
+		desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+		D3D11_SUBRESOURCE_DATA subResource;
+		ZeroMemory(&subResource, sizeof(D3D11_SUBRESOURCE_DATA));
+
+		subResource.pSysMem = Indices;
+		CD3D::Get()->GetDevice()->CreateBuffer(&desc, &subResource, &IndexBuffer);
+	}
+
+	
 	World = FMatrix::Identity;
 
 
@@ -48,7 +70,11 @@ void CDemo::Initialize()
 void CDemo::Destroy()
 {
 	DeleteArray(Vertices);
+	DeleteArray(Indices);
+	
 	Release(VertexBuffer);
+	Release(IndexBuffer);
+
 	Delete(Shader);
 }
 
@@ -100,11 +126,14 @@ void CDemo::Render()
 
 	UINT stride = sizeof(FVertex);
 	UINT offset = 0;
-	CD3D::Get()->GetDeviceContext()->IASetVertexBuffers(0, 1, &VertexBuffer, &stride, &offset);
 	CD3D::Get()->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	
+	CD3D::Get()->GetDeviceContext()->IASetVertexBuffers(0, 1, &VertexBuffer, &stride, &offset);
+	CD3D::Get()->GetDeviceContext()->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
 
 	Shader->SetPassNumber(0);
-	Shader->Draw(VertexCount, 0);
+	Shader->DrawIndexed(IndexCount, 0, 0);
 }
 
 void CDemo::PostRender()

@@ -6,6 +6,7 @@ class CDemo : public IExecutable
 {
 private:
 	static const int VertexCount; 
+	static const int IndexCount;
 public:
 	void Initialize();
 	void Destroy();
@@ -22,6 +23,9 @@ private:
 	
 	FVertex* Vertices; 
 	ID3D11Buffer* VertexBuffer;
+
+	UINT* Indices; 
+	ID3D11Buffer* IndexBuffer;
 
 	FMatrix World; 
 	FMatrix View; 
