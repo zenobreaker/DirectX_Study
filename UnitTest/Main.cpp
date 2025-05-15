@@ -3,14 +3,11 @@
 #include "Systems/Window.h"
 
 #include "Demo.h"
-#include "Line.h"
-#include "Line_Circle.h"
+#include "Rectangle.h"
 
 void CMain::Initialize()
 {
-	//Push_Main(Line);
-	Push_Main(Line_Circle);
-	//Push_Main(CDemo);
+	Push_Main(CRectangle);
 }
 
 void CMain::Destroy()

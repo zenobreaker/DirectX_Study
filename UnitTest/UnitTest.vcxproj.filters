@@ -15,9 +15,9 @@
     <ClInclude Include="Pch.h">
       <Filter>ETC</Filter>
     </ClInclude>
-    <ClInclude Include="Line.h" />
     <ClInclude Include="Demo.h" />
-    <ClInclude Include="Line_Circle.h" />
+    <ClInclude Include="Triangle_List.h" />
+    <ClInclude Include="Rectangle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -26,8 +26,8 @@
     <ClCompile Include="Pch.cpp">
       <Filter>ETC</Filter>
     </ClCompile>
-    <ClCompile Include="Line.cpp" />
     <ClCompile Include="Demo.cpp" />
-    <ClCompile Include="Line_Circle.cpp" />
+    <ClCompile Include="Triangle_List.cpp" />
+    <ClCompile Include="Rectangle.cpp" />
   </ItemGroup>
 </Project>

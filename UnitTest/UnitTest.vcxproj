@@ -135,20 +135,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Demo.cpp" />
-    <ClCompile Include="Line.cpp" />
-    <ClCompile Include="Line_Circle.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pch.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Rectangle.cpp" />
+    <ClCompile Include="Triangle_List.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Demo.h" />
-    <ClInclude Include="Line.h" />
-    <ClInclude Include="Line_Circle.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Pch.h" />
+    <ClInclude Include="Rectangle.h" />
+    <ClInclude Include="Triangle_List.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
