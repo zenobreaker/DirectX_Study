@@ -140,15 +140,11 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pch.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="Rectangle.cpp" />
-    <ClCompile Include="Triangle_List.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Demo.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Pch.h" />
-    <ClInclude Include="Rectangle.h" />
-    <ClInclude Include="Triangle_List.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

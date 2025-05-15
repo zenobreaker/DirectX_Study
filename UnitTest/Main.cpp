@@ -3,11 +3,10 @@
 #include "Systems/Window.h"
 
 #include "Demo.h"
-#include "Rectangle.h"
 
 void CMain::Initialize()
 {
-	Push_Main(CRectangle);
+	Push_Main(CDemo);
 }
 
 void CMain::Destroy()
