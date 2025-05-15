@@ -1,20 +1,23 @@
 #include "Pch.h"
 #include "Demo.h"
 
-const  int CDemo::VertexCount = 4;
-const  int CDemo::IndexCount = 6;
-
 void CDemo::Initialize()
 {
-	Shader = new CShader(L"World.fx");
+	Shader = new CShader(L"Grid.fx");
 
+	VertexCount = (Width + 1) * (Height + 1);
 	Vertices = new FVertex[VertexCount];
 
-	Vertices[0].Position = FVector(-0.5f, -0.5f, +0.0f);
-	Vertices[1].Position = FVector(-0.5f, +0.5f, +0.0f);
-	Vertices[2].Position = FVector(+0.5f, -0.5f, +0.0f);
-	Vertices[3].Position = FVector(+0.5f, +0.5f, +0.0f);
-
+	for (UINT y = 0; y <= Height; y++)
+	{
+		for (UINT x = 0; x <= Width; x++)
+		{
+			UINT i = (Width + 1) * y + x;
+			Vertices[i].Position.X = (float)x;
+			Vertices[i].Position.Y = (float)y;
+			Vertices[i].Position.Z = 0;
+		}
+	}
 
 	// Vertex Buffer 
 	{
@@ -31,10 +34,24 @@ void CDemo::Initialize()
 
 	}
 
-	Indices = new UINT[IndexCount]
+	IndexCount = (Width * Height) * 6;
+	Indices = new UINT[IndexCount];
+
+	UINT index = 0;
+	for (UINT y = 0; y < Height; y++)
 	{
-		0,1,2,2,1,3
-	};
+		for (UINT x = 0; x < Width; x++)
+		{
+			Indices[index + 0] = (Width + 1) * y + x;
+			Indices[index + 1] = (Width + 1) * (y + 1) + x;
+			Indices[index + 2] = (Width + 1) * y + x + 1;
+			Indices[index + 3] = (Width + 1) * y + x + 1;
+			Indices[index + 4] = (Width + 1) * (y + 1) + x;
+			Indices[index + 5] = (Width + 1) * (y + 1) + x + 1;
+
+			index += 6;
+		}
+	}
 
 	//Index Buffer
 	{
@@ -50,12 +67,12 @@ void CDemo::Initialize()
 		CD3D::Get()->GetDevice()->CreateBuffer(&desc, &subResource, &IndexBuffer);
 	}
 
-	
+
 	World = FMatrix::Identity;
 
 
 	FVector position(0, 0, -10);
-	FVector forward(0, 0, 1); 
+	FVector forward(0, 0, 1);
 	FVector right(1, 0, 0);
 	FVector up(0, 1, 0);
 
@@ -71,7 +88,7 @@ void CDemo::Destroy()
 {
 	DeleteArray(Vertices);
 	DeleteArray(Indices);
-	
+
 	Release(VertexBuffer);
 	Release(IndexBuffer);
 
@@ -86,14 +103,14 @@ void CDemo::Tick()
 
 
 	if (CKeyboard::Get()->Press(VK_LEFT))
-		location.X -= 1.0f * CTimer::Get()->GetDeltaTime(); 
-	
+		location.X -= 1.0f * CTimer::Get()->GetDeltaTime();
+
 	if (CKeyboard::Get()->Press(VK_RIGHT))
 		location.X += 1.0f * CTimer::Get()->GetDeltaTime();
 
-	if(CKeyboard::Get()->Press(VK_UP))
+	if (CKeyboard::Get()->Press(VK_UP))
 		location.Y += 1.0f * CTimer::Get()->GetDeltaTime();
-	if(CKeyboard::Get()->Press(VK_DOWN))
+	if (CKeyboard::Get()->Press(VK_DOWN))
 		location.Y -= 1.0f * CTimer::Get()->GetDeltaTime();
 
 	if (CKeyboard::Get()->Press('Z'))
@@ -111,11 +128,16 @@ void CDemo::Tick()
 
 	World.M41 = location.X;
 	World.M42 = location.Y;
+
+	static int pass = 0;
+	ImGui::SliderInt("Pass", (int*)&pass, 0, 1);
+
+	Shader->SetPassNumber(pass);
 }
 
 void CDemo::PreRender()
 {
-	
+
 }
 
 void CDemo::Render()
@@ -127,17 +149,15 @@ void CDemo::Render()
 	UINT stride = sizeof(FVertex);
 	UINT offset = 0;
 	CD3D::Get()->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	
+
 	CD3D::Get()->GetDeviceContext()->IASetVertexBuffers(0, 1, &VertexBuffer, &stride, &offset);
 	CD3D::Get()->GetDeviceContext()->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 
-	Shader->SetPassNumber(0);
 	Shader->DrawIndexed(IndexCount, 0, 0);
 }
 
 void CDemo::PostRender()
 {
-	
+
 }
- 

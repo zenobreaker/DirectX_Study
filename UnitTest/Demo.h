@@ -4,9 +4,6 @@
 
 class CDemo : public IExecutable
 {
-private:
-	static const int VertexCount; 
-	static const int IndexCount;
 public:
 	void Initialize();
 	void Destroy();
@@ -19,11 +16,16 @@ public:
 
 
 private:
+	UINT Width = 4;
+	UINT Height = 4; 
+
 	CShader* Shader; 
 	
+	UINT VertexCount; 
 	FVertex* Vertices; 
 	ID3D11Buffer* VertexBuffer;
 
+	UINT IndexCount; 
 	UINT* Indices; 
 	ID3D11Buffer* IndexBuffer;
 
