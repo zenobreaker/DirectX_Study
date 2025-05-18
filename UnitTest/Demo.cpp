@@ -3,27 +3,41 @@
 
 void CDemo::Initialize()
 {
-	Shader = new CShader(L"Grid.fx");
+	CContext::Get()->GetCamera()->SetRotation(FVector(8.0f, 0.0f, 0.0f));
+	CContext::Get()->GetCamera()->SetPosition(FVector(0.0f, 0.0f, -10.0f));
+	CContext::Get()->GetCamera()->SetMoveSpeed(10.0f);
 
-	VertexCount = (Width + 1) * (Height + 1);
-	Vertices = new FVertex[VertexCount];
+	Shader = new CShader(L"Texture_Filter.fx");
 
-	for (UINT y = 0; y <= Height; y++)
-	{
-		for (UINT x = 0; x <= Width; x++)
-		{
-			UINT i = (Width + 1) * y + x;
-			Vertices[i].Position.X = (float)x;
-			Vertices[i].Position.Y = (float)y;
-			Vertices[i].Position.Z = 0;
-		}
-	}
+
+	Vertices = new FVertexTexture[VertexCount];
+	Vertices[0].Position = FVector(-0.5f, -0.5f, 0.0f);
+	Vertices[1].Position = FVector(-0.5f, +0.5f, 0.0f);
+	Vertices[2].Position = FVector(+0.5f, -0.5f, 0.0f);
+	Vertices[3].Position = FVector(+0.5f, +0.5f, 0.0f);
+
+	//Vertices[0].Uv = FVector2D(0, 1);
+	//Vertices[1].Uv = FVector2D(0, 0);
+	//Vertices[2].Uv = FVector2D(1, 1);
+	//Vertices[3].Uv = FVector2D(1, 0);
+
+	//Vertices[0].Uv = FVector2D(0, 0.5f);
+	//Vertices[1].Uv = FVector2D(0, 0);
+	//Vertices[2].Uv = FVector2D(0.5f, 0.5f);
+	//Vertices[3].Uv = FVector2D(0.5f, 0);
+
+	Vertices[0].Uv = FVector2D(0, 2);
+	Vertices[1].Uv = FVector2D(0, 0);
+	Vertices[2].Uv = FVector2D(2, 2);
+	Vertices[3].Uv = FVector2D(2, 0);
+
+
 
 	// Vertex Buffer 
 	{
 		D3D11_BUFFER_DESC desc;
 		ZeroMemory(&desc, sizeof(D3D11_BUFFER_DESC));
-		desc.ByteWidth = sizeof(FVertex) * VertexCount;
+		desc.ByteWidth = sizeof(FVertexTexture) * VertexCount;
 		desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
 		D3D11_SUBRESOURCE_DATA subResource;
@@ -34,29 +48,17 @@ void CDemo::Initialize()
 
 	}
 
-	IndexCount = (Width * Height) * 6;
-	Indices = new UINT[IndexCount];
 
-	UINT index = 0;
-	for (UINT y = 0; y < Height; y++)
+	Indices = new UINT[IndexCount]
 	{
-		for (UINT x = 0; x < Width; x++)
-		{
-			Indices[index + 0] = (Width + 1) * y + x;
-			Indices[index + 1] = (Width + 1) * (y + 1) + x;
-			Indices[index + 2] = (Width + 1) * y + x + 1;
-			Indices[index + 3] = (Width + 1) * y + x + 1;
-			Indices[index + 4] = (Width + 1) * (y + 1) + x;
-			Indices[index + 5] = (Width + 1) * (y + 1) + x + 1;
-
-			index += 6;
-		}
-	}
+		0,1,2,2,1,3
+	};
 
 	//Index Buffer
 	{
 		D3D11_BUFFER_DESC desc;
 		ZeroMemory(&desc, sizeof(D3D11_BUFFER_DESC));
+		desc.Usage = D3D11_USAGE_DEFAULT;
 		desc.ByteWidth = sizeof(UINT) * IndexCount;
 		desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
@@ -67,27 +69,26 @@ void CDemo::Initialize()
 		CD3D::Get()->GetDevice()->CreateBuffer(&desc, &subResource, &IndexBuffer);
 	}
 
+	DeleteArray(Vertices);
+	DeleteArray(Indices);
 
 	World = FMatrix::Identity;
-
-
-	FVector position(0, 0, -10);
-	FVector forward(0, 0, 1);
-	FVector right(1, 0, 0);
-	FVector up(0, 1, 0);
-
-	View = FMatrix::CreateLookAt(position, (position + forward), up);
 
 	float width = CD3D::GetDesc().Width;
 	float height = CD3D::GetDesc().Height;
 
 	Projection = FMatrix::CreatePerspectiveFieldOfView(FMath::Pi * 0.25f, width / height, 0.1f, 1000.f);
+
+	HRESULT hr = D3DX11CreateShaderResourceViewFromFile
+	(
+		CD3D::Get()->GetDevice(), L"../../_Textures/Box.png", nullptr, nullptr, &SRV, nullptr
+	);
+
+	Check(hr);
 }
 
 void CDemo::Destroy()
 {
-	DeleteArray(Vertices);
-	DeleteArray(Indices);
 
 	Release(VertexBuffer);
 	Release(IndexBuffer);
@@ -97,42 +98,7 @@ void CDemo::Destroy()
 
 void CDemo::Tick()
 {
-	static FVector2D location(0, 0);
-	static FVector2D scale(1, 1);
-	ImGui::SliderFloat2("Location", location, -5, +5);
-
-
-	if (CKeyboard::Get()->Press(VK_LEFT))
-		location.X -= 1.0f * CTimer::Get()->GetDeltaTime();
-
-	if (CKeyboard::Get()->Press(VK_RIGHT))
-		location.X += 1.0f * CTimer::Get()->GetDeltaTime();
-
-	if (CKeyboard::Get()->Press(VK_UP))
-		location.Y += 1.0f * CTimer::Get()->GetDeltaTime();
-	if (CKeyboard::Get()->Press(VK_DOWN))
-		location.Y -= 1.0f * CTimer::Get()->GetDeltaTime();
-
-	if (CKeyboard::Get()->Press('Z'))
-		scale.X += 1.0f * CTimer::Get()->GetDeltaTime();
-	if (CKeyboard::Get()->Press('X'))
-		scale.X -= 1.0f * CTimer::Get()->GetDeltaTime();
-
-	if (CKeyboard::Get()->Press('C'))
-		scale.Y += 1.0f * CTimer::Get()->GetDeltaTime();
-	if (CKeyboard::Get()->Press('V'))
-		scale.Y -= 1.0f * CTimer::Get()->GetDeltaTime();
-
-	World.M11 = scale.X;
-	World.M22 = scale.Y;
-
-	World.M41 = location.X;
-	World.M42 = location.Y;
-
-	static int pass = 0;
-	ImGui::SliderInt("Pass", (int*)&pass, 0, 1);
-
-	Shader->SetPassNumber(pass);
+	ImGui::SliderInt("Address", (int*)&Address, 0, 3);
 }
 
 void CDemo::PreRender()
@@ -143,10 +109,12 @@ void CDemo::PreRender()
 void CDemo::Render()
 {
 	Shader->AsMatrix("World")->SetMatrix(World);
-	Shader->AsMatrix("View")->SetMatrix(View);
+	Shader->AsMatrix("View")->SetMatrix(CContext::Get()->GetViewMatrix());
 	Shader->AsMatrix("Projection")->SetMatrix(Projection);
+	Shader->AsSRV("Map")->SetResource(SRV);
+	Shader->AsScalar("Address")->SetInt(Address);
 
-	UINT stride = sizeof(FVertex);
+	UINT stride = sizeof(FVertexTexture);
 	UINT offset = 0;
 	CD3D::Get()->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 

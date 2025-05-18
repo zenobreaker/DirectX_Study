@@ -61,3 +61,6 @@
 #define IA_POINTLIST() { CD3D::Get()->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST); }
 #define IA_TRIANGLELIST() { CD3D::Get()->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST); }
 #define IA_TRIANGLESTRIP() { CD3D::Get()->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP); }
+
+typedef ID3D11ShaderResourceView ISRV;
+typedef ID3DX11EffectShaderResourceVariable ESRV;

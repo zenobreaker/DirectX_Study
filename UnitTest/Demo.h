@@ -16,20 +16,21 @@ public:
 
 
 private:
-	UINT Width = 4;
-	UINT Height = 4; 
-
 	CShader* Shader; 
 	
-	UINT VertexCount; 
-	FVertex* Vertices; 
+	UINT Address = 0; 
+
+	UINT VertexCount = 4; 
+	FVertexTexture* Vertices; 
 	ID3D11Buffer* VertexBuffer;
 
-	UINT IndexCount; 
+	UINT IndexCount= 6; 
 	UINT* Indices; 
 	ID3D11Buffer* IndexBuffer;
 
 	FMatrix World; 
 	FMatrix View; 
 	FMatrix Projection; 
+
+	ISRV* SRV = nullptr;
 };
