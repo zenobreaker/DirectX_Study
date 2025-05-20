@@ -19,6 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Shaders", "_Shaders", "{68
 		..\_Shaders\Rect.fx = ..\_Shaders\Rect.fx
 		..\_Shaders\Texture.fx = ..\_Shaders\Texture.fx
 		..\_Shaders\Texture_Filter.fx = ..\_Shaders\Texture_Filter.fx
+		..\_Shaders\Texture_Layering.fx = ..\_Shaders\Texture_Layering.fx
 		..\_Shaders\Triangle.fx = ..\_Shaders\Triangle.fx
 		..\_Shaders\World.fx = ..\_Shaders\World.fx
 	EndProjectSection
