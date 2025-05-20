@@ -18,8 +18,6 @@ public:
 private:
 	CShader* Shader; 
 	
-	UINT Address = 0; 
-
 	UINT VertexCount = 4; 
 	FVertexTexture* Vertices; 
 	ID3D11Buffer* VertexBuffer;
@@ -32,5 +30,5 @@ private:
 	FMatrix View; 
 	FMatrix Projection; 
 
-	ISRV* SRV = nullptr;
+	ISRV* SRV[3];
 };

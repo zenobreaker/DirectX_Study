@@ -7,7 +7,7 @@ void CDemo::Initialize()
 	CContext::Get()->GetCamera()->SetPosition(FVector(0.0f, 0.0f, -10.0f));
 	CContext::Get()->GetCamera()->SetMoveSpeed(10.0f);
 
-	Shader = new CShader(L"Texture_Filter.fx");
+	Shader = new CShader(L"Texture_Layering.fx");
 
 
 	Vertices = new FVertexTexture[VertexCount];
@@ -16,20 +16,11 @@ void CDemo::Initialize()
 	Vertices[2].Position = FVector(+0.5f, -0.5f, 0.0f);
 	Vertices[3].Position = FVector(+0.5f, +0.5f, 0.0f);
 
-	//Vertices[0].Uv = FVector2D(0, 1);
-	//Vertices[1].Uv = FVector2D(0, 0);
-	//Vertices[2].Uv = FVector2D(1, 1);
-	//Vertices[3].Uv = FVector2D(1, 0);
-
-	//Vertices[0].Uv = FVector2D(0, 0.5f);
-	//Vertices[1].Uv = FVector2D(0, 0);
-	//Vertices[2].Uv = FVector2D(0.5f, 0.5f);
-	//Vertices[3].Uv = FVector2D(0.5f, 0);
-
-	Vertices[0].Uv = FVector2D(0, 2);
+	Vertices[0].Uv = FVector2D(0, 1);
 	Vertices[1].Uv = FVector2D(0, 0);
-	Vertices[2].Uv = FVector2D(2, 2);
-	Vertices[3].Uv = FVector2D(2, 0);
+	Vertices[2].Uv = FVector2D(1, 1);
+	Vertices[3].Uv = FVector2D(1, 0);
+
 
 
 
@@ -79,16 +70,27 @@ void CDemo::Initialize()
 
 	Projection = FMatrix::CreatePerspectiveFieldOfView(FMath::Pi * 0.25f, width / height, 0.1f, 1000.f);
 
-	HRESULT hr = D3DX11CreateShaderResourceViewFromFile
-	(
-		CD3D::Get()->GetDevice(), L"../../_Textures/Box.png", nullptr, nullptr, &SRV, nullptr
-	);
+	wstring str[3]; 
+	str[0] = L"../../_Textures/Box.png";
+	str[1] = L"../../_Textures/Grayscale.png";
+	str[2] = L"../../_Textures/Forest Floor.jpg";
 
-	Check(hr);
+	for (int i = 0; i < 3; i++)
+	{
+		HRESULT hr = D3DX11CreateShaderResourceViewFromFile
+		(
+			CD3D::Get()->GetDevice(), str[i].c_str(), nullptr, nullptr, &SRV[i], nullptr
+		);
+		Check(hr);
+	}
 }
 
 void CDemo::Destroy()
 {
+	for (int i = 0; i < 3; i++)
+	{
+		Release(SRV[i]);
+	}
 
 	Release(VertexBuffer);
 	Release(IndexBuffer);
@@ -98,7 +100,6 @@ void CDemo::Destroy()
 
 void CDemo::Tick()
 {
-	ImGui::SliderInt("Address", (int*)&Address, 0, 3);
 }
 
 void CDemo::PreRender()
@@ -111,8 +112,8 @@ void CDemo::Render()
 	Shader->AsMatrix("World")->SetMatrix(World);
 	Shader->AsMatrix("View")->SetMatrix(CContext::Get()->GetViewMatrix());
 	Shader->AsMatrix("Projection")->SetMatrix(Projection);
-	Shader->AsSRV("Map")->SetResource(SRV);
-	Shader->AsScalar("Address")->SetInt(Address);
+	
+	Shader->AsSRV("Map")->SetResourceArray(SRV,0, 3);
 
 	UINT stride = sizeof(FVertexTexture);
 	UINT offset = 0;
