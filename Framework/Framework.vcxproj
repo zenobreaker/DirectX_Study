@@ -83,6 +83,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
       <PrecompiledHeaderFile>Framework.h</PrecompiledHeaderFile>
+      <DisableSpecificWarnings>4005;6386</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>

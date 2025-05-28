@@ -15,11 +15,11 @@ CFrame::CFrame(CShader* InShader)
 	SpotLightBuffer = new CConstantBuffer(Shader, "CB_SpotLights", spotLight, sizeof(FSpotLightDesc));
 
 
-	const vector<wstring> projectorMapFiles = CProjector::Get()->GetTextureFiles();
+	/*const vector<wstring> projectorMapFiles = CProjector::Get()->GetTextureFiles();
 	ProjectorMaps = new CTextureArray(Shader, "ProjectorMaps", projectorMapFiles);
 
 	FProjectorDesc* projector = CProjector::Get()->GetData();
-	ProjectorBuffer = new CConstantBuffer(Shader, "CB_Projectors", projector, sizeof(FProjectorDesc));
+	ProjectorBuffer = new CConstantBuffer(Shader, "CB_Projectors", projector, sizeof(FProjectorDesc));*/
 }
 
 CFrame::~CFrame()
@@ -28,8 +28,8 @@ CFrame::~CFrame()
 	Delete(LightBuffer);
 	Delete(PointLightBuffer);
 	Delete(SpotLightBuffer);
-	Delete(ProjectorMaps);
-	Delete(ProjectorBuffer);
+	//Delete(ProjectorMaps);
+	//Delete(ProjectorBuffer);
 }
 
 void CFrame::Render()
@@ -64,7 +64,7 @@ void CFrame::Render()
 	
 	//Projector Buffer
 	{
-		ProjectorMaps->Render();
-		ProjectorBuffer->Render();
+		//ProjectorMaps->Render();
+		//ProjectorBuffer->Render();
 	}
 }

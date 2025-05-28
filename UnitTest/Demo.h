@@ -16,19 +16,12 @@ public:
 
 
 private:
-	CShader* Shader; 
-	
-	UINT VertexCount = 4; 
-	FVertexTexture* Vertices; 
-	ID3D11Buffer* VertexBuffer;
+	void CreateTerrain();
 
-	UINT IndexCount= 6; 
-	UINT* Indices; 
-	ID3D11Buffer* IndexBuffer;
+private:
+	wstring ShaderFile;
 
-	FMatrix World; 
-	FMatrix View; 
-	FMatrix Projection; 
-
-	ISRV* SRV[3];
+private:
+	UINT Pass = 0; 
+	CTerrain* Terrain;
 };

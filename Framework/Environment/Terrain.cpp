@@ -80,7 +80,7 @@ void CTerrain::Render()
 	
 	IA_TRIANGLELIST();
 
-	Shader->SetPassNumber(4);
+	//Shader->SetPassNumber(1);
 	Shader->DrawIndexed(ICount);
 }
 
