@@ -29,7 +29,7 @@ public:
 private:
 	void Regeneration();
 
-private:
+public:
 	struct FVertexTerrain
 	{
 		FVertexTerrain()
@@ -54,6 +54,8 @@ public:
 	void SetLowMap(wstring InFile, wstring InNormalFile);
 	void SetHighMap(wstring InFile, wstring InNormalFile);
 	void SetSlopeMap(wstring InFile, wstring InNormalFile);
+
+	FVertexTerrain* GetVerticies() { return Vertices; }
 
 private:
 	void CreateVertexData();

@@ -10,21 +10,54 @@ void CDemo::Initialize()
 	ShaderFile = L"TerrainNormal.fx";
 
 	CreateTerrain(); 
+
+	Shader = new CShader(L"TerrainDebugLine.fx");
+
+	World = FMatrix::Identity;
+	CTerrain::FVertexTerrain* vertices = Terrain->GetVerticies(); 
+	UINT width = Terrain->GetWidth(); 
+	UINT height = Terrain->GetHeight(); 
+
+	for (UINT  z = 0; z < height; z++)
+	{
+		for (UINT x = 0; x < width; x++)
+		{
+			UINT index = width * z + x; 
+
+			FVector start = vertices[index].Position;
+			FVector end = vertices[index].Position + vertices[index].Normal * 2; 
+
+			Vertices.push_back(FVertexColor(start, FColor::Green));
+			Vertices.push_back(FVertexColor(end, FColor::Green));
+		}
+	}
+
+	FVertexColor* vert2 = new FVertexColor[Vertices.size()];
+	copy(Vertices.begin(), Vertices.end(), vert2);
+
+	VBuffer = new CVertexBuffer(vert2, Vertices.size(), sizeof(FVertexColor));
+
+	DeleteArray(vert2);
 }
 
 void CDemo::Destroy()
 {
+	Delete(VBuffer);
+	Delete(Shader); 
 	Delete(Terrain); 
 }
 
 void CDemo::Tick()
 {
 	Terrain->Tick(); 
+
+	Shader->AsMatrix("World")->SetMatrix(World);
+	Shader->AsMatrix("View")->SetMatrix(CContext::Get()->GetViewMatrix());
+	Shader->AsMatrix("Projection")->SetMatrix(CContext::Get()->GetProjectionMatrix());
 }
 
 void CDemo::PreRender()
 {
-	
 }
 
 void CDemo::Render()
@@ -33,6 +66,10 @@ void CDemo::Render()
 
 	Terrain->SetPass(Pass);
 	Terrain->Render();
+
+	IA_LINELIST();
+	VBuffer->Render();
+	Shader->Draw(Vertices.size());
 }
 
 void CDemo::PostRender()

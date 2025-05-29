@@ -24,4 +24,10 @@ private:
 private:
 	UINT Pass = 0; 
 	CTerrain* Terrain;
+	CShader* Shader;
+
+	FMatrix World; 
+	CVertexBuffer* VBuffer; 
+
+	vector<FVertexColor> Vertices;
 };
