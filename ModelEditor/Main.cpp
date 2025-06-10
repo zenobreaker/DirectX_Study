@@ -17,6 +17,7 @@ void CMain::Cube()
 	CConverter* converter = new CConverter(); 
 	converter->ReadFile(L"Cube.fbx", 0.1f); 
 	converter->ExportMaterial(L"Cube/Cube"); 
+	converter->ExportMesh(L"Cube");
 	Delete(converter); 
 }
 
@@ -25,6 +26,7 @@ void CMain::Airplane()
 	CConverter* converter = new CConverter();
 	converter->ReadFile(L"Airplane/Airplane.fbx", 0.01f);
 	converter->ExportMaterial(L"Airplane/Airplane");
+	converter->ExportMesh(L"Airplane");
 	Delete(converter);
 }
 

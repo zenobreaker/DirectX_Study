@@ -34,9 +34,236 @@ void CConverter::ReadFile(wstring InFileName, float InGlobalScale)
 	Assert(Scene != nullptr, "¸ðµ¨ Á¤»ó ·Îµå ¾ÊµÊ");
 }
 
+void CConverter::ExportMesh(wstring InSaveFileName)
+{
+	InSaveFileName = L"../../_Models/" + InSaveFileName + L".mesh"; 
+
+	ReadBoneData(Scene->mRootNode, 0, -1); 
+	ReadSkinData(); 
+
+	WriteMeshData(InSaveFileName);
+}
+
+void CConverter::ReadMeshData()
+{
+	for (UINT i = 0; i < Scene->mNumMeshes; i++)
+	{
+		FMeshData* data = new FMeshData(); 
+
+		aiMesh* mesh = Scene->mMeshes[i];
+		data->Name = mesh->mName.C_Str(); 
+
+		UINT materialIndex = mesh->mMaterialIndex; 
+		aiMaterial* material = Scene->mMaterials[materialIndex];
+		data->MaterialName = material->GetName().C_Str(); 
+		
+		for (UINT v = 0; v < mesh->mNumVertices; v++)
+		{
+			FVertexModel vertex; 
+
+			memcpy_s(&vertex.Position, sizeof(FVector), &mesh->mVertices[v], sizeof(FVector));
+
+			if (mesh->HasTextureCoords(0))
+				memcpy_s(&vertex.Uv, sizeof(FVector2D), &mesh->mTextureCoords[0][v], sizeof(FVector2D));
+
+			if (mesh->HasVertexColors(0))
+				memcpy_s(&vertex.Color, sizeof(FColor), &mesh->mColors[0][v], sizeof(FColor));
+
+			if (mesh->HasNormals())
+				memcpy_s(&vertex.Normal, sizeof(FVector), &mesh->mNormals[v], sizeof(FVector));
+
+			if (mesh->HasTangentsAndBitangents())
+				memcpy_s(&vertex.Tangent, sizeof(FVector), &mesh->mTangents[v], sizeof(FVector));
+
+			data->Vertices.push_back(vertex);
+		}
+
+		for (UINT f = 0; f < mesh->mNumFaces; f++)
+		{
+			aiFace& face = mesh->mFaces[f];
+
+			for (UINT k = 0; k < face.mNumIndices; k++)
+				data->Indices.push_back(face.mIndices[k]);
+		}
+
+		Meshes.push_back(data);
+	}
+}
+
+void CConverter::ReadBoneData(aiNode* InNode, UINT InIndex, int InParent)
+{
+	FBoneData* bone = new FBoneData(); 
+	bone->Index = InIndex;
+	bone->Parent = InParent;
+	bone->Name = InNode->mName.C_Str(); 
+
+	memcpy_s(bone->Transform, sizeof(FMatrix), InNode->mTransformation[0], sizeof(FMatrix));
+	bone->Transform = FMatrix::Transpose(bone->Transform);
+
+	FMatrix parent; 
+	if (InParent < 0)
+		parent = FMatrix::Identity;
+	else
+		parent = Bones[InParent]->Transform;
+
+	bone->Transform = bone->Transform * parent; //(L-World * Parent)
+	Bones.push_back(bone); 
+
+	ReadMeshData(InNode, InIndex);
+
+	for (UINT i = 0; i < InNode->mNumChildren; i++)
+		ReadBoneData(InNode->mChildren[i], Bones.size(), InIndex);
+}
+
+void CConverter::ReadMeshData(aiNode* InNode, UINT InBoneIndex)
+{
+	CheckTrue(InNode->mNumMeshes < 1);
+
+	for (UINT i = 0; i < InNode->mNumMeshes; i++)
+	{
+		FMeshData* data = new FMeshData(); 
+
+		UINT index = InNode->mMeshes[i];
+		aiMesh* mesh = Scene->mMeshes[index]; 
+
+		data->Name = mesh->mName.C_Str(); 
+
+		UINT materialIndex = mesh->mMaterialIndex;
+		aiMaterial* material = Scene->mMaterials[materialIndex]; 
+		data->MaterialName = material->GetName().C_Str(); 
+
+		data->BoneIndex = InBoneIndex; 
+
+		for (UINT v = 0; v < mesh->mNumVertices; v++)
+		{
+			FVertexModel vertex; 
+
+			memcpy_s(&vertex.Position, sizeof(FVector), &mesh->mVertices[v], sizeof(FVector));
+
+			if (mesh->HasTextureCoords(0))
+				memcpy_s(&vertex.Uv, sizeof(FVector2D), &mesh->mTextureCoords[0][v], sizeof(FVector2D));
+
+			if (mesh->HasVertexColors(0))
+				memcpy_s(&vertex.Color, sizeof(FColor), &mesh->mColors[0][v], sizeof(FColor));
+
+			if (mesh->HasNormals())
+				memcpy_s(&vertex.Normal, sizeof(FVector), &mesh->mNormals[v], sizeof(FVector));
+
+			if (mesh->HasTangentsAndBitangents())
+				memcpy_s(&vertex.Tangent, sizeof(FVector), &mesh->mTangents[v], sizeof(FVector));
+
+			data->Vertices.push_back(vertex);
+		}
+		for (UINT f = 0; f < mesh->mNumFaces; f++)
+		{
+			aiFace& face = mesh->mFaces[f];
+
+			for (UINT k = 0; k < face.mNumIndices; k++)
+				data->Indices.push_back(face.mIndices[k]);
+		}
+
+		Meshes.push_back(data);
+	}
+}
+
+void CConverter::ReadSkinData()
+{
+	for (UINT i = 0; i < Scene->mNumMeshes; i++)
+	{
+		aiMesh* mesh = Scene->mMeshes[i];
+
+		if (mesh->HasBones() == false)
+			continue; 
+
+		for (UINT b = 0; b < mesh->mNumBones; b++)
+		{
+			aiBone* bone = mesh->mBones[b]; 
+			string boneName = bone->mName.C_Str(); 
+
+			UINT index = 0; 
+			for (UINT boneIndex = 0; boneIndex < Bones.size(); boneIndex++)
+			{
+				if (Bones[boneIndex]->Name == boneName)
+				{
+					index = (int)boneIndex;
+
+					break; 
+				}
+			}
+
+			FMatrix offset; 
+			memcpy_s(offset, sizeof(FMatrix), bone->mOffsetMatrix[0], sizeof(FMatrix));
+			Bones[index]->OffsetTransform = FMatrix::Transpose(offset); 
+
+			for (UINT w = 0; w < bone->mNumWeights; w++)
+			{
+				UINT id = bone->mWeights[w].mVertexId;
+				float weight = bone->mWeights[w].mWeight;
+
+				FMeshData* meshData = Meshes[i];
+
+				FVector4& indices = meshData->Vertices[id].Indices;
+				FVector4& weights = meshData->Vertices[id].Weights;
+
+				int v; 
+				for (v = 0; v < 4; v++)
+				{
+					if (indices.V[v] <= 0.0f)
+					{
+						indices.V[v] = (float)index; 
+						weights.V[v] = weight;
+
+						break; 
+					}
+				}//for(v)
+			}//for(w)
+		}
+	}//for(i)
+}
+
+void CConverter::WriteMeshData(wstring InSaveFileName)
+{
+	CPath::CreateFolders(CPath::GetDirectoryName(InSaveFileName));
+
+	CBinaryWriter* w = new CBinaryWriter();
+	w->Open(InSaveFileName); 
+
+	w->ToUInt(Bones.size());
+	for (FBoneData* data : Bones)
+	{
+		w->ToUInt(data->Index);
+		w->ToString(data->Name); 
+
+		w->ToInt(data->Parent); 
+		w->ToMatrix(data->Transform);
+		w->ToMatrix(data->OffsetTransform);
+
+		Delete(data);
+	}
+
+	w->ToUInt(Meshes.size());
+	for (FMeshData* data : Meshes)
+	{
+		w->ToString(data->Name);
+		w->ToString(data->MaterialName);
+		w->ToUInt(data->BoneIndex);
+
+		w->ToUInt(data->Vertices.size());
+		w->ToByte(&data->Vertices[0], sizeof(FVertexModel) * data->Vertices.size());
+
+		w->ToUInt(data->Indices.size());
+		w->ToByte(&data->Indices[0], sizeof(UINT) * data->Indices.size());
+
+		Delete(data);
+	}
+
+	w->Close();
+	Delete(w);
+}
+
 void CConverter::ExportMaterial(wstring InSaveFileName)
 {
-	InSaveFileName = L"../../Models/" + InSaveFileName + L".material";
+	InSaveFileName = L"../../_Models/" + InSaveFileName + L".material";
 
 	ReadMaterials(); 
 	WriteMaterial(InSaveFileName);

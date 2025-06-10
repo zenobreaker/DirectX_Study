@@ -36,6 +36,9 @@ private:
 	void ReadBoneData(CBinaryReader* InReader);
 	void ReadMeshData(CBinaryReader* InReader);
 
+public:
+	void AddMaterial(wstring InFilePath);
+
 private:
 	map<string, CMaterial*> MaterialTable;
 

@@ -15,3 +15,42 @@ struct FMaterialData
 	string SpecularFile; 
 	string NormalFile; 
 };
+
+struct FBoneData
+{
+	UINT Index;
+	string Name;
+
+	int Parent;
+	FMatrix Transform;
+	FMatrix OffsetTransform;
+};
+
+struct FMeshData
+{
+	string Name;
+	string MaterialName; 
+	int BoneIndex; 
+
+	vector<FVertexModel> Vertices; 
+	vector<UINT> Indices; 
+};
+
+struct FClipNodeData
+{
+	string BoneName;
+
+	vector<CModelAnimation::FFrameVector> PositionKeys;
+	vector<CModelAnimation::FFrameVector> ScalingKeys;
+	vector<CModelAnimation::FFrameQuat> RotationKeys;
+};
+
+struct FClipData
+{
+	string Name;
+
+	float Duration;
+	float TickersPerSecond;
+
+	vector<FClipNodeData*> NodeDatas;
+};

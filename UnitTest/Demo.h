@@ -18,10 +18,18 @@ public:
 private:
 	void CreateTerrain();
 
-private:
-	wstring ShaderFile;
+	void CreateCube(); 
+
 
 private:
+	wstring ShaderFile;
+	wstring MaterialFolder;
+
+private:
+	CShader* Shader;
+
 	UINT Pass = 0; 
 	CTerrain* Terrain;
+
+	CMeshRender* Cube = nullptr;
 };

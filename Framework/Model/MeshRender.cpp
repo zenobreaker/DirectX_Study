@@ -217,6 +217,21 @@ void CMeshRender::ReadMeshData(CBinaryReader* InReader)
 	}
 }
 
+void CMeshRender::AddMaterial(wstring InFilePath)
+{
+	wstring InName = InFilePath;
+	InFilePath = L"../../_Textures/" + InName + L".png";
+	wstring Specular = L"../../_Textures/" + InName + L"_Specular" + L".png";
+	wstring NormalMap = L"../../_Textures/" + InName + L"_Normal" + L".png";
+
+	for (auto& material : MaterialTable)
+	{
+		material.second->SetDiffuseMap(InFilePath, false);
+		material.second->SetSpecularMap(Specular, false);
+		material.second->SetNormalMap(NormalMap, false);
+	}
+}
+
 CModelMesh* CMeshRender::GetMeshByName(string InName)
 {
 	for (CModelMesh* mesh : Meshes)
