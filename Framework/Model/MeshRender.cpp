@@ -1,6 +1,7 @@
 #include "Framework.h"
 #include "MeshRender.h"
 #include <fstream>
+#include <iostream>
 
 CMeshRender::CMeshRender(CShader* InShader)
 	: Shader(InShader)
@@ -8,6 +9,7 @@ CMeshRender::CMeshRender(CShader* InShader)
 	Frame = new CFrame(Shader);
 
 	CBuffer = new CConstantBuffer(Shader, "CB_BoneTransforms", &Data, sizeof(FDesc));
+
 	InstanceBuffer = new CVertexBuffer(Worlds, MAX_INSTANCE_COUNT, sizeof(FMatrix), INSTANCE_SLOT_NUMBER, true);
 	
 	CInstanceColorBuffer = new CConstantBuffer(Shader, "CB_InstanceColors", InstanceColorDatas, sizeof(FInstanceColorDesc) * MAX_INSTANCE_COUNT);
@@ -52,8 +54,12 @@ void CMeshRender::Render()
 		InstanceTextures->Render();
 
 	for (CModelMesh* mesh : Meshes)
+	{
+		mesh->SetPass(Pass);
 		mesh->Render();
+	}
 }
+
 
 CTransform* CMeshRender::AddTransform()
 {

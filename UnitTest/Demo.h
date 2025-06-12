@@ -19,8 +19,11 @@ private:
 	void CreateTerrain();
 
 	void CreateCube(); 
+	void CreateAirplane(); 
+	void CreateSphere(); 
+	void CreateKachujin(); 
 
-
+	void DrawModelBone(CMeshRender* InMesh);
 private:
 	wstring ShaderFile;
 	wstring MaterialFolder;
@@ -31,5 +34,7 @@ private:
 	UINT Pass = 0; 
 	CTerrain* Terrain;
 
-	CMeshRender* Cube = nullptr;
+	vector<CMeshRender*> Renders; 
+
+	CSphereDebugDrawer* BoneDebugger = nullptr;
 };

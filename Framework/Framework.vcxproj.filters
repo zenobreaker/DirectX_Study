@@ -140,6 +140,9 @@
     <ClCompile Include="Renders\Shader.cpp">
       <Filter>Renders</Filter>
     </ClCompile>
+    <ClCompile Include="Model\SphereDebugDrawer.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework.h" />
@@ -287,6 +290,9 @@
     </ClInclude>
     <ClInclude Include="Viewer\Viewport.h">
       <Filter>VIewer</Filter>
+    </ClInclude>
+    <ClInclude Include="Model\SphereDebugDrawer.h">
+      <Filter>Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

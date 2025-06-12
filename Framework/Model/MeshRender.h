@@ -2,6 +2,9 @@
 
 class CMeshRender
 {
+friend class CShpereDebugDrawer;
+
+
 public:
 	CMeshRender(CShader* InShader);
 	virtual ~CMeshRender();
@@ -10,8 +13,13 @@ public:
 	virtual void Render();
 
 public:
+	void SetPass(UINT InPass) { Pass = InPass; };
+
+public:
 	CTransform* AddTransform();
 	CTransform* GetTransform(UINT InIndex);
+
+	UINT GetBoneCount() { return Bones.size(); }
 
 public:
 	CMaterial* GetMaterial(const string& InName);
@@ -43,8 +51,10 @@ private:
 	map<string, CMaterial*> MaterialTable;
 
 protected:
+	UINT Pass = 0;
 	CShader* Shader;
 
+public:
 	vector<CModelBone*> Bones;
 	vector<CModelMesh*> Meshes;
 

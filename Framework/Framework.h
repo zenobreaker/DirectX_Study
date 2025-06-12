@@ -91,6 +91,7 @@ using namespace chrono;
 #include "Model/MeshRender.h"
 #include "Model/ModelAnimation.h"
 #include "Model/AnimRender.h"
+#include "Model/SphereDebugDrawer.h"
 
 #include "Objects/CubeMap.h"
 #include "Objects/Billboard.h"

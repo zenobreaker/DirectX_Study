@@ -43,5 +43,6 @@ void CModelMesh::Render()
 	CBuffer->Render();
 
 	IA_TRIANGLELIST();
+	Shader->SetPassNumber(Pass);
 	Shader->DrawIndexedInstanced(IndexCount, MAX_INSTANCE_COUNT);
 }

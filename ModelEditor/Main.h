@@ -9,5 +9,13 @@ public:
 
 private:
 	void Cube();
+	void Sphere();
+	void Cone();
+	void Cylinder();
+	void Plane();
+
 	void Airplane();
+
+	void Kachujin_Old();
+	void Kachujin();
 };

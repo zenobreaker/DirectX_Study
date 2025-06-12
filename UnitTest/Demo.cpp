@@ -11,21 +11,38 @@ void CDemo::Initialize()
 	ShaderFile = L"TerrainNormal.fx";
 
 	CreateTerrain(); 
-	CreateCube();
+	
+	//CreateCube();
+	//CreateSphere();
+	//CreateAirplane();
+
+	CreateKachujin();
 }
 
 void CDemo::Destroy()
 {
 	Delete(Terrain); 
 
-	Delete(Cube);
+	for(auto& render : Renders)
+		Delete(render); 
 }
 
 void CDemo::Tick()
 {
 	Terrain->Tick(); 
+	ImGui::Separator();
+	ImGui::SeparatorText("Render Pass");
+	static int pass = 0;
+	ImGui::SliderInt("Pass", (int*)&pass, 0, 1);
 
-	Cube->Tick();
+	for (int i = 0; i < Renders.size(); i++)
+	{
+		Renders[i]->SetPass((UINT)pass);
+		Renders[i]->Tick();
+	}
+
+	if (BoneDebugger != nullptr)
+		BoneDebugger->Tick();
 }
 
 void CDemo::PreRender()
@@ -40,7 +57,13 @@ void CDemo::Render()
 	Terrain->SetPass(Pass);
 	Terrain->Render();
 
-	Cube->Render(); 
+	for (int i = 0; i < Renders.size(); i++)
+	{
+		Renders[i]->Render();
+	}
+
+	if(BoneDebugger != nullptr)
+		BoneDebugger->Render();
 }
 
 void CDemo::PostRender()
@@ -60,14 +83,71 @@ void CDemo::CreateTerrain()
 void CDemo::CreateCube()
 {
 	Shader = CShaders::Get()->GetShader(L"Cube.fx");
-	Cube = new CMeshRender(Shader);
-	Cube->ReadMaterial(MaterialFolder + L"Cube");
-	Cube->AddMaterial(L"Box");
-	Cube->ReadMesh(L"Cube");
+	CMeshRender* render = new CMeshRender(Shader);
+	render->ReadMaterial(MaterialFolder + L"Cube");
+	render->AddMaterial(L"Box");
+	render->ReadMesh(L"Cube");
 
 
-	CTransform* t = Cube->AddTransform();
+	CTransform* t = render->AddTransform();
 	t->SetPosition(FVector(100.5f , 11.5f , 64.0f ));
 	t->SetScale(100.0f);
 	t->UpdateWorld();
+
+	Renders.push_back(render);
+}
+
+void CDemo::CreateAirplane()
+{
+	Shader = CShaders::Get()->GetShader(L"Cube.fx");
+	CMeshRender* render = new CMeshRender(Shader);
+	render->ReadMaterial(MaterialFolder + L"Airplane");
+	render->ReadMesh(L"Airplane");
+
+
+	CTransform* t = render->AddTransform();
+	t->SetPosition(FVector(100.5f, 11.5f, 64.0f));
+	t->SetScale(100.0f);
+	t->UpdateWorld();
+
+	Renders.push_back(render);	
+
+	DrawModelBone(render);
+}
+
+void CDemo::CreateSphere()
+{
+	Shader = CShaders::Get()->GetShader(L"Cube.fx");
+	CMeshRender* render = new CMeshRender(Shader);
+	render->ReadMaterial(MaterialFolder + L"Sphere");
+	render->ReadMesh(L"Sphere");
+
+	CTransform* t = render->AddTransform();
+	t->SetPosition(FVector(100.5f, 11.5f, 64.0f));
+	t->SetScale(100.0f);
+	t->UpdateWorld();
+
+	Renders.push_back(render);
+}
+
+void CDemo::CreateKachujin()
+{
+	Shader = CShaders::Get()->GetShader(L"Cube.fx");
+	CMeshRender* render = new CMeshRender(Shader);
+	render->ReadMaterial(MaterialFolder + L"Kachujin");
+	render->ReadMesh(L"Kachujin/Kachujin");
+
+	CTransform* t = render->AddTransform();
+	t->SetPosition(FVector(100.5f, 11.5f, 64.0f));
+	t->SetScale(100.0f);
+	t->UpdateWorld();
+
+	Renders.push_back(render);
+	DrawModelBone(render);
+}
+
+void CDemo::DrawModelBone(CMeshRender* InMesh)
+{
+	CShader* shader = CShaders::Get()->GetShader(L"Sphere.fx");
+	BoneDebugger = new CSphereDebugDrawer(shader, InMesh);
 }

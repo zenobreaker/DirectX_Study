@@ -15,6 +15,10 @@ private:
 	void Render();
 
 private:
+	void SetPass(UINT InNumber) {Pass = InNumber;};
+
+private:
+	UINT Pass = 0;
 	CShader* Shader;
 
 	string Name;
