@@ -22,6 +22,7 @@ private:
 	void CreateAirplane(); 
 	void CreateSphere(); 
 	void CreateKachujin(); 
+	void CreateKachujin_Old(); 
 
 	void DrawModelBone(CMeshRender* InMesh);
 private:

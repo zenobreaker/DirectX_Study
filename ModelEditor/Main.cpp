@@ -14,8 +14,8 @@ void CMain::Initialize()
 
 	//Airplane();
 
-	Kachujin_Old();
-	Kachujin();
+	//Kachujin_Old();
+	//Kachujin();
 
 
 	MessageBox(CD3D::GetDesc().Handle, L"변환 완료", L"Message", MB_OK);
@@ -86,22 +86,22 @@ void CMain::Kachujin_Old()
 
 	converter = new CConverter();
 	converter->ReadFile(L"Kachujin_Old/Idle.fbx", 0.1f);
-	//converter->ExportAnimation(L"Kachujin_Old/Idle");
+	converter->ExportAnimation(L"Kachujin_Old/Idle");
 	Delete(converter);
 
 	converter = new CConverter();
 	converter->ReadFile(L"Kachujin_Old/Walk.fbx", 0.1f);
-	//converter->ExportAnimation(L"Kachujin_Old/Walk");
+	converter->ExportAnimation(L"Kachujin_Old/Walk");
 	Delete(converter);
 
 	converter = new CConverter();
 	converter->ReadFile(L"Kachujin_Old/Run.fbx", 0.1f);
-	//converter->ExportAnimation(L"Kachujin_Old/Run");
+	converter->ExportAnimation(L"Kachujin_Old/Run");
 	Delete(converter);
 
 	converter = new CConverter();
 	converter->ReadFile(L"Kachujin_Old/Salsa.fbx", 0.1f);
-	//converter->ExportAnimation(L"Kachujin_Old/Salsa");
+	converter->ExportAnimation(L"Kachujin_Old/Salsa");
 	Delete(converter);
 }
 
@@ -115,7 +115,16 @@ void CMain::Kachujin()
 
 	converter = new CConverter();
 	converter->ReadFile(L"Kachujin/Idle.fbx", 0.1f);
-	//converter->ExportAnimation(L"Kachujin/Idle");
+	converter->ExportAnimation(L"Kachujin/Idle");
+	Delete(converter);
+}
+
+void CMain::Turtle()
+{
+	CConverter* converter = new CConverter();
+	converter->ReadFile(L"Kachujin/Kachujin.fbx", 0.1f);
+	converter->ExportMaterial(L"Kachujin/Kachujin");
+	converter->ExportMesh(L"Kachujin/Kachujin");
 	Delete(converter);
 }
 

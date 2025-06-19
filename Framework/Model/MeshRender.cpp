@@ -238,6 +238,14 @@ void CMeshRender::AddMaterial(wstring InFilePath)
 	}
 }
 
+FMatrix CMeshRender::UpdateBoneTransformWithIndex(UINT InIndex)
+{
+	FMatrix world = GetTransform(0)->GetMatrix();
+	FMatrix matrix = Bones[InIndex]->GetTransform();
+
+	return matrix;
+}
+
 CModelMesh* CMeshRender::GetMeshByName(string InName)
 {
 	for (CModelMesh* mesh : Meshes)

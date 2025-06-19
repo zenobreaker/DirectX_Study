@@ -16,7 +16,8 @@ void CDemo::Initialize()
 	//CreateSphere();
 	//CreateAirplane();
 
-	CreateKachujin();
+	//CreateKachujin();
+	CreateKachujin_Old();
 }
 
 void CDemo::Destroy()
@@ -132,10 +133,12 @@ void CDemo::CreateSphere()
 
 void CDemo::CreateKachujin()
 {
-	Shader = CShaders::Get()->GetShader(L"Cube.fx");
-	CMeshRender* render = new CMeshRender(Shader);
+	Shader = CShaders::Get()->GetShader(L"Animation.fx");
+	CAnimRender* render = new CAnimRender(Shader);
 	render->ReadMaterial(MaterialFolder + L"Kachujin");
 	render->ReadMesh(L"Kachujin/Kachujin");
+	render->ReadAnimation(L"Kachujin/Idle");
+	render->Finish_ReadDatas(); 
 
 	CTransform* t = render->AddTransform();
 	t->SetPosition(FVector(100.5f, 11.5f, 64.0f));
@@ -144,6 +147,24 @@ void CDemo::CreateKachujin()
 
 	Renders.push_back(render);
 	DrawModelBone(render);
+}
+
+void CDemo::CreateKachujin_Old()
+{
+	Shader = CShaders::Get()->GetShader(L"Animation.fx");
+	CAnimRender* render = new CAnimRender(Shader);
+	render->ReadMaterial(MaterialFolder + L"Kachujin_Old");
+	render->ReadMesh(L"Kachujin_Old/Kachujin_Old");
+	render->ReadAnimation(L"Kachujin_Old/Idle");
+	render->Finish_ReadDatas();
+
+	CTransform* t = render->AddTransform();
+	t->SetPosition(FVector(100.5f, 11.5f, 64.0f));
+	t->SetScale(100.0f);
+	t->UpdateWorld();
+
+	Renders.push_back(render);
+	//DrawModelBone(render);
 }
 
 void CDemo::DrawModelBone(CMeshRender* InMesh)

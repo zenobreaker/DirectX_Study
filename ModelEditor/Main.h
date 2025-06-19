@@ -18,4 +18,6 @@ private:
 
 	void Kachujin_Old();
 	void Kachujin();
+
+	void Turtle();
 };

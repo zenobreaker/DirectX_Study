@@ -46,6 +46,7 @@ private:
 
 public:
 	void AddMaterial(wstring InFilePath);
+	virtual FMatrix UpdateBoneTransformWithIndex(UINT InIndex);
 
 private:
 	map<string, CMaterial*> MaterialTable;
@@ -54,7 +55,7 @@ protected:
 	UINT Pass = 0;
 	CShader* Shader;
 
-public:
+protected:
 	vector<CModelBone*> Bones;
 	vector<CModelMesh*> Meshes;
 

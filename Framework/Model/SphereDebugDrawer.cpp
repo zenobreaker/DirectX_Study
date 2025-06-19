@@ -13,10 +13,10 @@ CSphereDebugDrawer::CSphereDebugDrawer(CShader* InShader, CMeshRender* InTargetM
 	for (UINT i = 0; i < TargetMesh->GetBoneCount(); i++)
 	{
 		CTransform* t = Sphere->AddTransform();
-		t->SetScale(FVector(10.0f));
+		t->SetScale(FVector(1.0f));
 		t->UpdateWorld();
 
-		FMatrix matrix = TargetMesh->Bones[i]->GetTransform();
+		FMatrix matrix = TargetMesh->UpdateBoneTransformWithIndex(i);
 		BonePoints.push_back(FVector::TransformCoord(FVector::Zero, matrix * world));
 	}
 }
@@ -33,7 +33,7 @@ void CSphereDebugDrawer::Tick()
 	FMatrix world = TargetMesh->GetTransform(0)->GetMatrix();
 	for (UINT i = 0; i < TargetMesh->GetBoneCount(); i++)
 	{
-		FMatrix matrix = TargetMesh->Bones[i]->GetTransform();
+		FMatrix matrix = TargetMesh->UpdateBoneTransformWithIndex(i);
 
 		CTransform* t = Sphere->GetTransform(i);
 		t->SetPosition(FVector::TransformCoord(FVector::Zero, matrix * world));

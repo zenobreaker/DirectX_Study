@@ -1,4 +1,4 @@
-#include "Framework.h"
+﻿#include "Framework.h"
 #include "ModelAnimation.h"
 
 CModelAnimation::CModelAnimation()
@@ -13,8 +13,7 @@ CModelAnimation::~CModelAnimation()
 
 void CModelAnimation::CalcClipTransform(const vector<CModelBone*>& InBones)
 {
-	ClipTransform = new FClipTransform();
-
+	ClipTransform = new FClipTransform(); 
 
 	map<string, FKeyframe*> keyframeNameTable;
 
@@ -27,7 +26,6 @@ void CModelAnimation::CalcClipTransform(const vector<CModelBone*>& InBones)
 		keyframeNameTable[name] = Keyframes[i];
 	}
 
-
 	FMatrix* bones = new FMatrix[MAX_MODEL_TRANSFORMS];
 
 	for (UINT f = 0; f <= (UINT)Duration; f++)
@@ -35,18 +33,17 @@ void CModelAnimation::CalcClipTransform(const vector<CModelBone*>& InBones)
 		for (UINT b = 0; b < InBones.size(); b++)
 		{
 			CModelBone* bone = InBones[b];
-
+			
+			// 본의 전역 트랜스폼을 역행렬로 변환하여 본의 로컬좌표로 되돌림
 			FMatrix invGlobal = bone->GetTransform();
 			invGlobal = FMatrix::Invert(invGlobal);
 
-
-			FMatrix parent;
+			FMatrix parent; 
 
 			if (bone->GetParentIndex() < 0)
 				parent = FMatrix::Identity;
 			else
 				parent = bones[bone->GetParentIndex()];
-
 
 			auto iter = keyframeNameTable.find(bone->GetName());
 
@@ -62,7 +59,7 @@ void CModelAnimation::CalcClipTransform(const vector<CModelBone*>& InBones)
 				}
 				else
 				{
-					UINT last = data->Positions.size() - 1;
+					UINT last = data->Positions.size() - 1; 
 					position = data->Positions[last].Value;
 				}
 
@@ -77,7 +74,6 @@ void CModelAnimation::CalcClipTransform(const vector<CModelBone*>& InBones)
 					scale = data->Scalings[last].Value;
 				}
 
-
 				FQuaternion rotation;
 				if (data->Rotations.size() - 1 >= f)
 				{
@@ -89,15 +85,15 @@ void CModelAnimation::CalcClipTransform(const vector<CModelBone*>& InBones)
 					rotation = data->Rotations[last].Value;
 				}
 
-
 				FMatrix S = FMatrix::CreateScale(scale);
 				FMatrix R = FMatrix::CreateFromQuaternion(rotation);
 				FMatrix T = FMatrix::CreateTranslation(position);
 
-				animation = S * R * T;
+				animation = S * R * T; 
 			}
-
+			// 현재 본의 애니메이션 변환을 부모 본의 트랜스폼과 결합
 			bones[b] = animation * parent;
+			// 본의 트랜스폼을 월드 좌표계에서 로컬좌표계로 변환 후 저장.
 			ClipTransform->Transform[f][b] = invGlobal * bones[b];
 		}//for(b)
 	}//for(f)

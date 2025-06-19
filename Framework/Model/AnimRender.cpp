@@ -1,11 +1,11 @@
-#include "Framework.h"
+ï»¿#include "Framework.h"
 #include "AnimRender.h"
 
 CAnimRender::CAnimRender(CShader* InShader)
 	: CMeshRender(InShader)
 {
 	sClipSRV = Shader->AsSRV("AnimationClipMaps");
-	
+
 	CBuffer = new CConstantBuffer(Shader, "CB_AnimBlendingData", &AnimBlendingData, sizeof(FAnimBlendingDesc) * MAX_INSTANCE_COUNT);
 }
 
@@ -96,7 +96,7 @@ void CAnimRender::ReadAnimationData(wstring InName)
 			}
 		}
 
-		
+
 		UINT frameCount = 0;
 
 		frameCount = reader->FromUInt();
@@ -122,8 +122,8 @@ void CAnimRender::ReadAnimationData(wstring InName)
 
 			continue;
 		}
-		
-		animation->Keyframes[i] = data;			
+
+		animation->Keyframes[i] = data;
 	}
 
 	reader->Close();
@@ -141,8 +141,8 @@ void CAnimRender::Finish_ReadDatas()
 		ReadAnimationData(name);
 
 	CreateClipTransforms();
-	
-	for(UINT i = 0; i < MAX_INSTANCE_COUNT; i++)
+
+	for (UINT i = 0; i < MAX_INSTANCE_COUNT; i++)
 		ChangeClip(i, -1);
 }
 
@@ -222,9 +222,11 @@ void CAnimRender::CreateClipTransforms()
 	}
 }
 
+
+
 void CAnimRender::ChangeClip(int InIndex, int InClipIndex, float TakeTime, float PlaySpeed)
 {
-	if (InClipIndex < 0) //ÃÖÃÊ ½ÇÇà
+	if (InClipIndex < 0) //ìµœì´ˆ ì‹¤í–‰
 	{
 		AnimBlendingData[InIndex].Current.Clip = 0;
 

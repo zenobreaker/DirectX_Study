@@ -405,3 +405,118 @@ string CConverter::SaveTexture(string InSaveFolder, string InFileName)
 
 	return InSaveFolder + CPath::GetFileName(path);
 }
+
+void CConverter::ExportAnimation(wstring InSaveFileName, int InClipIndex)
+{
+	FClipData* clipdata = nullptr; 
+	InSaveFileName = L"../../_Models/" + InSaveFileName + L".animation";
+
+	clipdata = ReadClipData(Scene->mAnimations[InClipIndex]);
+	WriteClipData(InSaveFileName, clipdata);
+}
+
+FClipData* CConverter::ReadClipData(aiAnimation* InAnimation)
+{
+	FClipData* clipData = new FClipData();
+
+	clipData->Name = InAnimation->mName.C_Str();
+	clipData->Duration = (float)InAnimation->mDuration;
+	clipData->TickersPerSecond = (float)InAnimation->mTicksPerSecond;
+
+	for (UINT i = 0; i < InAnimation->mNumChannels; i++)
+	{
+		aiNodeAnim* nodeAnim = InAnimation->mChannels[i];
+
+		FClipNodeData* nodeData = new FClipNodeData();
+		nodeData->BoneName = nodeAnim->mNodeName.C_Str();
+
+
+		//PositionKeys
+		for (UINT keyIndex = 0; keyIndex < nodeAnim->mNumPositionKeys; keyIndex++)
+		{
+			const aiVectorKey& key = nodeAnim->mPositionKeys[keyIndex];
+
+			CModelAnimation::FFrameVector vectorData;
+			vectorData.Time = (float)key.mTime;
+			memcpy(&vectorData.Value, &key.mValue, sizeof(FVector));
+
+			nodeData->PositionKeys.push_back(vectorData);
+		}
+
+		//ScalingKeys
+		for (UINT keyIndex = 0; keyIndex < nodeAnim->mNumScalingKeys; keyIndex++)
+		{
+			const aiVectorKey& key = nodeAnim->mScalingKeys[keyIndex];
+
+			CModelAnimation::FFrameVector vectorData;
+			vectorData.Time = (float)key.mTime;
+			memcpy(&vectorData.Value, &key.mValue, sizeof(FVector));
+
+			nodeData->ScalingKeys.push_back(vectorData);
+		}
+
+		//RotationKeys
+		for (UINT keyIndex = 0; keyIndex < nodeAnim->mNumRotationKeys; keyIndex++)
+		{
+			const aiQuatKey& key = nodeAnim->mRotationKeys[keyIndex];
+
+			CModelAnimation::FFrameQuat quatData;
+			quatData.Time = (float)key.mTime;
+
+			quatData.Value.X = key.mValue.x;
+			quatData.Value.Y = key.mValue.y;
+			quatData.Value.Z = key.mValue.z;
+			quatData.Value.W = key.mValue.w;
+
+			nodeData->RotationKeys.push_back(quatData);
+		}
+
+		//printf("%d, %s, %d, %d, %d\n", (int)clipData->Duration, nodeData->BoneName.c_str(), nodeData->PositionKeys.size(), nodeData->RotationKeys.size(), nodeData->ScalingKeys.size());
+		clipData->NodeDatas.push_back(nodeData);
+	}//for(i)
+
+	//printf("------------------------------------------------------------\n");
+
+	return clipData;
+}
+
+void CConverter::WriteClipData(wstring InSaveFileName, FClipData* InClipData)
+{
+	CPath::CreateFolders(CPath::GetDirectoryName(InSaveFileName));
+
+	CBinaryWriter* w = new CBinaryWriter();
+	w->Open(InSaveFileName);
+
+	w->ToString(InClipData->Name);
+
+	w->ToFloat(InClipData->Duration);
+	w->ToFloat(InClipData->TickersPerSecond);
+
+	w->ToUInt(InClipData->NodeDatas.size());
+	for (FClipNodeData* nodeData : InClipData->NodeDatas)
+	{
+		w->ToString(nodeData->BoneName);
+
+
+		UINT count = 0;
+
+		count = nodeData->PositionKeys.size();
+		w->ToUInt(count);
+		w->ToByte(&nodeData->PositionKeys[0], sizeof(CModelAnimation::FFrameVector) * count);
+
+		count = nodeData->ScalingKeys.size();
+		w->ToUInt(count);
+		w->ToByte(&nodeData->ScalingKeys[0], sizeof(CModelAnimation::FFrameVector) * count);
+
+		count = nodeData->RotationKeys.size();
+		w->ToUInt(count);
+		w->ToByte(&nodeData->RotationKeys[0], sizeof(CModelAnimation::FFrameQuat) * count);
+
+		Delete(nodeData);
+	}
+
+	Delete(InClipData);
+
+	w->Close();
+	Delete(w);
+}

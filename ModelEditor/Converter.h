@@ -30,6 +30,13 @@ private:
 	
 	string SaveTexture(string InSaveFolder, string InFileName);
 
+public:
+	void ExportAnimation(wstring InSaveFileName, int InClipIndex = 0);
+
+private:
+	struct FClipData* ReadClipData(aiAnimation* InAnimation);
+	void WriteClipData(wstring InSaveFileName, struct FClipData* InClipData);
+
 private:
 	wstring ReadFilePath;
 	Assimp::Importer* Loader; // 모델을 읽어올 대상 
