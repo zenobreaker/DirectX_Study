@@ -23,6 +23,7 @@ private:
 	void CreateSphere(); 
 	void CreateKachujin(); 
 	void CreateKachujin_Old(); 
+	void CreateTurtle();
 
 	void DrawModelBone(CMeshRender* InMesh);
 private:
@@ -33,6 +34,7 @@ private:
 	CShader* Shader;
 
 	UINT Pass = 0; 
+	UINT ModelIndex = 0;
 	CTerrain* Terrain;
 
 	vector<CMeshRender*> Renders; 

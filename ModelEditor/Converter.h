@@ -32,6 +32,8 @@ private:
 
 public:
 	void ExportAnimation(wstring InSaveFileName, int InClipIndex = 0);
+	void ExportInnerAnimation(wstring InSaveFileName, int InClipIndex = 0);
+
 
 private:
 	struct FClipData* ReadClipData(aiAnimation* InAnimation);

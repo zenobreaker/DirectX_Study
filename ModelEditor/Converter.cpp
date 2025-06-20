@@ -415,6 +415,31 @@ void CConverter::ExportAnimation(wstring InSaveFileName, int InClipIndex)
 	WriteClipData(InSaveFileName, clipdata);
 }
 
+void CConverter::ExportInnerAnimation(wstring InSaveFileName, int InClipIndex)
+{
+	
+	
+	for (UINT i = 0; i < Scene->mNumAnimations; i++)
+	{
+		aiAnimation* animation = Scene->mAnimations[i];
+		
+		FClipData* clipdata = nullptr;
+		clipdata = ReadClipData(animation);
+		aiString name = animation->mName;
+
+		wstring file = CString::ToWString(name.C_Str());
+		size_t pipePos = file.find('|');
+		wstring fbxPath = file.substr(0, pipePos);
+		wstring animName = file.substr(pipePos + 1);
+		
+		wstring filePath = L"../../_Models/" + InSaveFileName +L"/" + animName + L".animation";
+
+		WriteClipData(filePath, clipdata);
+	}
+	
+	//clipdata = ReadClipData()
+}
+
 FClipData* CConverter::ReadClipData(aiAnimation* InAnimation)
 {
 	FClipData* clipData = new FClipData();
