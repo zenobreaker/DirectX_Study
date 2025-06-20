@@ -18,6 +18,7 @@ void CDemo::Initialize()
 
 	//CreateKachujin();
 	CreateKachujin_Old();
+	CreateTurtle();
 }
 
 void CDemo::Destroy()
@@ -35,12 +36,12 @@ void CDemo::Tick()
 	ImGui::SeparatorText("Render Pass");
 	static int pass = 0;
 	ImGui::SliderInt("Pass", (int*)&pass, 0, 1);
+	
+	ImGui::SliderInt("Model", (int*)&ModelIndex, 0, Renders.size() - 1);
 
-	for (int i = 0; i < Renders.size(); i++)
-	{
-		Renders[i]->SetPass((UINT)pass);
-		Renders[i]->Tick();
-	}
+	Renders[ModelIndex]->SetPass((UINT)pass);
+	Renders[ModelIndex]->Tick();
+	
 
 	if (BoneDebugger != nullptr)
 		BoneDebugger->Tick();
@@ -58,10 +59,7 @@ void CDemo::Render()
 	Terrain->SetPass(Pass);
 	Terrain->Render();
 
-	for (int i = 0; i < Renders.size(); i++)
-	{
-		Renders[i]->Render();
-	}
+	Renders[ModelIndex]->Render();
 
 	if(BoneDebugger != nullptr)
 		BoneDebugger->Render();
@@ -165,6 +163,23 @@ void CDemo::CreateKachujin_Old()
 
 	Renders.push_back(render);
 	//DrawModelBone(render);
+}
+
+void CDemo::CreateTurtle()
+{
+	Shader = CShaders::Get()->GetShader(L"Animation.fx");
+	CAnimRender* render = new CAnimRender(Shader);
+	render->ReadMaterial(MaterialFolder + L"Turtle");
+	render->ReadMesh(L"Turtle/Turtle");
+	render->ReadAnimation(L"Turtle/Idle");
+	render->Finish_ReadDatas();
+
+	CTransform* t = render->AddTransform();
+	t->SetPosition(FVector(100.5f, 11.5f, 64.0f));
+	t->SetScale(100.0f);
+	t->UpdateWorld();
+
+	Renders.push_back(render);
 }
 
 void CDemo::DrawModelBone(CMeshRender* InMesh)

@@ -51,3 +51,9 @@ packages/
 ## Others
 *.DS_Store
 Thumbs.db
+
+## 정적 분석 결과 무시
+*.sarif
+*.html
+*.xml
+*.pchast

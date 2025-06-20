@@ -17,6 +17,7 @@ void CMain::Initialize()
 	//Kachujin_Old();
 	//Kachujin();
 
+	Turtle();
 
 	MessageBox(CD3D::GetDesc().Handle, L"변환 완료", L"Message", MB_OK);
 }
@@ -122,9 +123,11 @@ void CMain::Kachujin()
 void CMain::Turtle()
 {
 	CConverter* converter = new CConverter();
-	converter->ReadFile(L"Kachujin/Kachujin.fbx", 0.1f);
-	converter->ExportMaterial(L"Kachujin/Kachujin");
-	converter->ExportMesh(L"Kachujin/Kachujin");
+	converter->ReadFile(L"Turtle/Turtle.fbx", 0.1f);
+	converter->ExportMaterial(L"Turtle/Turtle");
+	converter->ExportMesh(L"Turtle/Turtle");
+	converter->ExportInnerAnimation(L"Turtle");
+
 	Delete(converter);
 }
 
