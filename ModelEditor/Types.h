@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Pch.h"
 
 struct FMaterialData
@@ -23,7 +23,7 @@ struct FBoneData
 
 	int Parent;
 	FMatrix Transform;
-	FMatrix OffsetTransform;
+	FMatrix OffsetTransform; // “BindPose 상태를 애니메이션 포즈로 바꿔주는 교정 행렬”
 };
 
 struct FMeshData

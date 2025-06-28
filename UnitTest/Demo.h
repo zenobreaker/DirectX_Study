@@ -19,6 +19,7 @@ private:
 	void CreateTerrain();
 
 	void CreateCube(); 
+	void CreateFloor(); 
 	void CreateAirplane(); 
 	void CreateSphere(); 
 	void CreateKachujin(); 
@@ -35,6 +36,9 @@ private:
 
 	UINT Pass = 0; 
 	UINT ModelIndex = 0;
+
+	FVector Position = FVector(120.0f, 2.0f, 90.0f);
+
 	CTerrain* Terrain;
 
 	vector<CMeshRender*> Renders; 
