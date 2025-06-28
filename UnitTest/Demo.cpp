@@ -3,8 +3,8 @@
 
 void CDemo::Initialize()
 {
-	CContext::Get()->GetCamera()->SetRotation(FVector(12.0f, 0.0f, 0.0f));
-	CContext::Get()->GetCamera()->SetPosition(FVector(71.0f, 24.0f, -10.0f));
+	CContext::Get()->GetCamera()->SetRotation(FVector(30.0f, 0.0f, 0.0f));
+	CContext::Get()->GetCamera()->SetPosition(FVector(119.0f, 4.31f, 81.43f));
 	CContext::Get()->GetCamera()->SetMoveSpeed(10.0f);
 
 	MaterialFolder = L"";
@@ -12,7 +12,8 @@ void CDemo::Initialize()
 
 	CreateTerrain(); 
 	
-	//CreateCube();
+	CreateFloor();
+	CreateCube();
 	//CreateSphere();
 	//CreateAirplane();
 
@@ -31,17 +32,41 @@ void CDemo::Destroy()
 
 void CDemo::Tick()
 {
-	Terrain->Tick(); 
+	//Terrain->Tick(); 
 	ImGui::Separator();
 	ImGui::SeparatorText("Render Pass");
 	static int pass = 0;
 	ImGui::SliderInt("Pass", (int*)&pass, 0, 1);
 	
+	ImGui::SeparatorText("Model");
+	static int prev = 0;
 	ImGui::SliderInt("Model", (int*)&ModelIndex, 0, Renders.size() - 1);
 
-	Renders[ModelIndex]->SetPass((UINT)pass);
-	Renders[ModelIndex]->Tick();
 	
+	//static int clipNumber = 0;
+	//if (prev != ModelIndex)
+	//{
+	//	prev = ModelIndex;
+	//	clipNumber = 0;
+	//}
+	//
+	//int maxClip = 0;
+	//auto ar = dynamic_cast<CAnimRender*>(Renders[ModelIndex]);
+	//if (ar != nullptr)
+	//{
+	//	maxClip = ar->GetAnimationCount();
+	//}
+	//ImGui::SliderInt("ClipNumber", (int*)&clipNumber, 0, maxClip-1);
+
+	//if (ImGui::Button("Change"))
+	//{
+	//	if (ar != nullptr)
+	//		ar->ChangeClip(0, clipNumber);
+	//}
+
+
+	for(auto render : Renders)
+		render->Tick();
 
 	if (BoneDebugger != nullptr)
 		BoneDebugger->Tick();
@@ -56,10 +81,11 @@ void CDemo::Render()
 {
 	ImGui::SliderInt("Pass ", (int*)&Pass, 1, 0);
 
-	Terrain->SetPass(Pass);
-	Terrain->Render();
+	//Terrain->SetPass(Pass);
+	//Terrain->Render();
 
-	Renders[ModelIndex]->Render();
+	for(auto render : Renders)
+		render->Render();
 
 	if(BoneDebugger != nullptr)
 		BoneDebugger->Render();
@@ -87,12 +113,34 @@ void CDemo::CreateCube()
 	render->AddMaterial(L"Box");
 	render->ReadMesh(L"Cube");
 
+	int index = 0;
+	for (float x = -7.0f; x <= 7.0; x += 0.1f)
+	{
+		CTransform* t = render->AddTransform();
+		t->SetPosition(FVector(Position.X + x, -5.5f, Position.Z - 0.5f));
+		float rotX = FMath::Random(0.f, 180.f);
+		float rotZ = FMath::Random(0.f, 180.f);
+		t->SetRotation(FVector(rotX, 0, rotZ));
+		t->UpdateWorld();
+	}
+
+	Renders.push_back(render);
+}
+
+void CDemo::CreateFloor()
+{
+	Shader = CShaders::Get()->GetShader(L"Cube.fx");
+	CMeshRender* render = new CMeshRender(Shader);
+	render->ReadMaterial(MaterialFolder + L"Plane"); 
+	render->ReadMesh(L"Plane");
 
 	CTransform* t = render->AddTransform();
-	t->SetPosition(FVector(100.5f , 11.5f , 64.0f ));
-	t->SetScale(100.0f);
+	t->SetPosition(FVector(Position.X, -5.5f, Position.Z));
+	t->SetScale(FVector(150, 15, 30));
 	t->UpdateWorld();
 
+	CMaterial* material = render->GetMaterial("WorldGridMaterial");
+	material->SetTiling(FVector2D(6, 6));
 	Renders.push_back(render);
 }
 
@@ -138,13 +186,16 @@ void CDemo::CreateKachujin()
 	render->ReadAnimation(L"Kachujin/Idle");
 	render->Finish_ReadDatas(); 
 
-	CTransform* t = render->AddTransform();
-	t->SetPosition(FVector(100.5f, 11.5f, 64.0f));
-	t->SetScale(100.0f);
-	t->UpdateWorld();
+	for (float x =75.0f; x < 75.0f; x++)
+	{
+		CTransform* t = render->AddTransform();
+		t->SetPosition(FVector(x, 11.5f, 64.0f));
+		t->SetScale(100.0f);
+		t->UpdateWorld();
+	}
 
 	Renders.push_back(render);
-	DrawModelBone(render);
+	//DrawModelBone(render);
 }
 
 void CDemo::CreateKachujin_Old()
@@ -154,12 +205,20 @@ void CDemo::CreateKachujin_Old()
 	render->ReadMaterial(MaterialFolder + L"Kachujin_Old");
 	render->ReadMesh(L"Kachujin_Old/Kachujin_Old");
 	render->ReadAnimation(L"Kachujin_Old/Idle");
+	render->ReadAnimation(L"Kachujin_Old/Run");
+	render->ReadAnimation(L"Kachujin_Old/Salsa");
+	render->ReadAnimation(L"Kachujin_Old/Walk");
 	render->Finish_ReadDatas();
 
-	CTransform* t = render->AddTransform();
-	t->SetPosition(FVector(100.5f, 11.5f, 64.0f));
-	t->SetScale(100.0f);
-	t->UpdateWorld();
+	int index = 0; 
+	for (float x = -7.0f; x <= 7.0; x+=0.1f)
+	{
+		CTransform* t = render->AddTransform();
+		t->SetPosition(FVector(Position.X + x, -5.5f, Position.Z+0.5f));
+		t->UpdateWorld();
+		int clip = FMath::Random(0, 3);
+		render->ChangeClip(index++, clip);
+	}
 
 	Renders.push_back(render);
 	//DrawModelBone(render);
@@ -172,13 +231,22 @@ void CDemo::CreateTurtle()
 	render->ReadMaterial(MaterialFolder + L"Turtle");
 	render->ReadMesh(L"Turtle/Turtle");
 	render->ReadAnimation(L"Turtle/Idle");
+	render->ReadAnimation(L"Turtle/GuardPose");
+	render->ReadAnimation(L"Turtle/Hit");
+	render->ReadAnimation(L"Turtle/Attack_Scratch");
 	render->Finish_ReadDatas();
 
-	CTransform* t = render->AddTransform();
-	t->SetPosition(FVector(100.5f, 11.5f, 64.0f));
-	t->SetScale(100.0f);
-	t->UpdateWorld();
+	int index = 0;
+	for (float x = -7.0f; x <= 7.0; x += 0.1f)
+	{
+		CTransform* t = render->AddTransform();
+		t->SetPosition(FVector(Position.X + x, -5.5f, Position.Z ));
+		t->SetScale(0.5f);
+		t->UpdateWorld();
+		int clip = FMath::Random(0, 3);
+		render->ChangeClip(index++, clip);
 
+	}
 	Renders.push_back(render);
 }
 

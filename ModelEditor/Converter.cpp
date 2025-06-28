@@ -1,4 +1,4 @@
-#include "Pch.h"
+ï»¿#include "Pch.h"
 #include "Converter.h"
 #include "Types.h"
 
@@ -31,7 +31,7 @@ void CConverter::ReadFile(wstring InFileName, float InGlobalScale)
 		| aiProcess_GlobalScale
 	);
 
-	Assert(Scene != nullptr, "¸ğµ¨ Á¤»ó ·Îµå ¾ÊµÊ");
+	Assert(Scene != nullptr, "ëª¨ë¸ ì •ìƒ ë¡œë“œ ì•Šë¨");
 }
 
 void CConverter::ExportMesh(wstring InSaveFileName)
@@ -40,6 +40,27 @@ void CConverter::ExportMesh(wstring InSaveFileName)
 
 	ReadBoneData(Scene->mRootNode, 0, -1); 
 	ReadSkinData(); 
+
+	ofstream stream;
+	//stream.open("../BoneMatrix.csv");
+	//for (auto& p : Bones)
+	//	stream << p->Name << "," << p->Transform.M41 << "," << p->Transform.M42 << "," << p->Transform.M43 << endl;
+	//stream.close();
+
+	//stream.open("../OffsetMatrix.csv");
+	//for (auto& p : Bones)
+	//	stream << p->Name << "," << p->OffsetTransform.M41 << "," << p->OffsetTransform.M42 << "," << p->OffsetTransform.M43 << endl;
+	//stream.close();
+	//stream.open("../Vertices.csv");
+	//for (FMeshData* mesh :Meshes)
+	//{
+	//	for (const FVertexModel& vertex : mesh->Vertices)
+	//	{
+	//		stream << vertex.Position.X << "," << vertex.Position.Y << "," << vertex.Position.Z <<",";
+	//		stream << vertex.Indices.X << "," << vertex.Indices.Y << "," << vertex.Indices.Z << ",";
+	//		stream << vertex.Weights.X << "," << vertex.Weights.Y << "," << vertex.Weights.Z << endl;
+	//	}
+	//}
 
 	WriteMeshData(InSaveFileName);
 }
@@ -106,9 +127,8 @@ void CConverter::ReadBoneData(aiNode* InNode, UINT InIndex, int InParent)
 	else
 		parent = Bones[InParent]->Transform;
 
-	bone->Transform = bone->Transform * parent; //(L-World * Parent)
+	bone->Transform = bone->Transform * parent; //(L-World * Parent) ë³¸ì˜ ì „ì—­ ë³€í™˜ í–‰ë ¬ì–»ìŒ
 	Bones.push_back(bone); 
-
 	ReadMeshData(InNode, InIndex);
 
 	for (UINT i = 0; i < InNode->mNumChildren; i++)
@@ -283,8 +303,8 @@ void CConverter::ReadMaterials()
 
 		aiColor4D color; 
 
-		// MaterialÀÇ ¼Ó¼º°¡Á®¿À±â
-		// KeyµéÀÌ Á¤¸®µÊ. 
+		// Materialì˜ ì†ì„±ê°€ì ¸ì˜¤ê¸°
+		// Keyë“¤ì´ ì •ë¦¬ë¨. 
 		material->Get(AI_MATKEY_COLOR_AMBIENT, color); 
 		data->Ambient = FColor(color.r, color.g, color.b, color.a);
 
@@ -415,10 +435,13 @@ void CConverter::ExportAnimation(wstring InSaveFileName, int InClipIndex)
 	WriteClipData(InSaveFileName, clipdata);
 }
 
+/// <summary>
+/// FBXì— ë‚´ì¥ëœ ì• ë‹ˆë©”ì´ì…˜ì„ ì°¾ì•„ ì €ì¥
+/// </summary>
+/// <param name="InSaveFileName"></param>
+/// <param name="InClipIndex"></param>
 void CConverter::ExportInnerAnimation(wstring InSaveFileName, int InClipIndex)
 {
-	
-	
 	for (UINT i = 0; i < Scene->mNumAnimations; i++)
 	{
 		aiAnimation* animation = Scene->mAnimations[i];
