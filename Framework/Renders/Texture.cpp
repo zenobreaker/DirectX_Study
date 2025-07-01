@@ -39,6 +39,14 @@ void CTexture::Render()
 	sSRV->SetResource(SRV);
 }
 
+ID3D11Texture2D* CTexture::GetTexture()
+{
+	ID3D11Texture2D* texture = nullptr;
+	SRV->GetResource((ID3D11Resource**)&texture);
+
+	return texture;
+}
+
 DirectX::TexMetadata CTexture::GetMetaData(wstring InFilePath)
 {
 	HRESULT hr;

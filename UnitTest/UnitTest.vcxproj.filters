@@ -18,6 +18,7 @@
     <ClInclude Include="Demo.h" />
     <ClInclude Include="RawBufferDemo.h" />
     <ClInclude Include="RawBufferDemo2.h" />
+    <ClInclude Include="TextureBufferDemo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -29,5 +30,6 @@
     <ClCompile Include="Demo.cpp" />
     <ClCompile Include="RawBufferDemo.cpp" />
     <ClCompile Include="RawBufferDemo2.cpp" />
+    <ClCompile Include="TextureBufferDemo.cpp" />
   </ItemGroup>
 </Project>

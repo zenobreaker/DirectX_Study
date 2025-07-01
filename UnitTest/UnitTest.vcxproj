@@ -144,6 +144,7 @@
     </ClCompile>
     <ClCompile Include="RawBufferDemo.cpp" />
     <ClCompile Include="RawBufferDemo2.cpp" />
+    <ClCompile Include="TextureBufferDemo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Demo.h" />
@@ -151,6 +152,7 @@
     <ClInclude Include="Pch.h" />
     <ClInclude Include="RawBufferDemo.h" />
     <ClInclude Include="RawBufferDemo2.h" />
+    <ClInclude Include="TextureBufferDemo.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -84,7 +84,7 @@ public:
 	operator const ID3D11ShaderResourceView* () { return SRV; }
 
 protected:
-	virtual void CreateInput() = 0;
+	virtual void CreateInput() {};
 	virtual void CreateSRV() = 0;
 
 	virtual void CreateOutput() = 0;
@@ -129,4 +129,36 @@ private:
 
 	UINT InputSize = 0;
 	UINT OutputSize = 0;
+};
+
+//------------------------------------------------------------------------------
+
+class CTextureBuffer : public CCsResource
+{
+public:
+	CTextureBuffer(ID3D11Texture2D* InSource);
+	~CTextureBuffer();
+
+private:
+	void CreateSRV() override;
+	void CreateOutput() override;
+	void CreateUAV() override;
+	void CreateResult() override;
+
+public:
+	UINT GetWidth() { return Width; }
+	UINT GetHeight() { return Height; }
+	UINT GetArraySize() { return ArraySize; }
+	DXGI_FORMAT GetFormat() { return Format; }
+
+	ID3D11Texture2D* GetOutput() { return (ID3D11Texture2D*)Output; }
+	ID3D11ShaderResourceView* GetOutputSRV() { return OutputSRV; }
+
+private:
+	UINT Width;
+	UINT Height; 
+	UINT ArraySize; 
+	DXGI_FORMAT Format; 
+
+	ID3D11ShaderResourceView* OutputSRV; 
 };

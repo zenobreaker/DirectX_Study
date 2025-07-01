@@ -3,13 +3,12 @@
 #include "Systems/Window.h"
 
 #include "Demo.h"
-#include "RawBufferDemo.h"
-#include "RawBufferDemo2.h"
+#include "TextureBufferDemo.h"
+
 
 void CMain::Initialize()
 {
-	Push_Main(CRawBufferDemo2);
-	//Push_Main(CRawBufferDemo);
+	Push_Main(CTextureBufferDemo);
 	//Push_Main(CDemo);
 }
 
