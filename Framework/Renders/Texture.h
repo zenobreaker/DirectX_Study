@@ -10,6 +10,7 @@ public:
 	void Render();
 
 public:
+	ID3D11Texture2D* GetTexture();
 	ID3D11ShaderResourceView* GetSRV() { return SRV; }
 
 public:
