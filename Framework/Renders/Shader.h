@@ -15,6 +15,7 @@ public:
 	void DrawInstanced(UINT vertexCountPerInstance, UINT instanceCount, UINT startVertexLocation = 0, UINT startInstanceLocation = 0);
 	void DrawIndexedInstanced(UINT indexCountPerInstance, UINT instanceCount, UINT startIndexLocation = 0, INT baseVertexLocation = 0, UINT startInstanceLocation = 0);
 
+	void Dispatch(UINT InX, UINT InY, UINT InZ);
 	void Dispatch(UINT InTechnique, UINT InPass, UINT InX, UINT InY, UINT InZ);
 
 

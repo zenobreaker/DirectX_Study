@@ -142,11 +142,15 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pch.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="RawBufferDemo.cpp" />
+    <ClCompile Include="RawBufferDemo2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Demo.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Pch.h" />
+    <ClInclude Include="RawBufferDemo.h" />
+    <ClInclude Include="RawBufferDemo2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -335,9 +335,16 @@ void CShader::DrawIndexedInstanced(UINT indexCountPerInstance, UINT instanceCoun
 	Techniques[TechniqueNumber].Passes[PassNumber].DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
 }
 
-void CShader::Dispatch(UINT InTechnique, UINT InPass, UINT InX, UINT InY, UINT InZ)
+void CShader::Dispatch(UINT InX, UINT InY, UINT InZ)
 {
 	Techniques[TechniqueNumber].Passes[PassNumber].Dispatch(InX, InY, InZ);
+}
+
+void CShader::Dispatch(UINT InTechnique, UINT InPass, UINT InX, UINT InY, UINT InZ)
+{
+	SetTechniqueNumber(InTechnique); 
+	SetPassNumber(InPass);
+	Dispatch(InX, InY, InZ);
 }
 
 ID3DX11EffectVariable* CShader::Variable(string InName)

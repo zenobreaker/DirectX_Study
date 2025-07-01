@@ -3,10 +3,14 @@
 #include "Systems/Window.h"
 
 #include "Demo.h"
+#include "RawBufferDemo.h"
+#include "RawBufferDemo2.h"
 
 void CMain::Initialize()
 {
-	Push_Main(CDemo);
+	Push_Main(CRawBufferDemo2);
+	//Push_Main(CRawBufferDemo);
+	//Push_Main(CDemo);
 }
 
 void CMain::Destroy()
