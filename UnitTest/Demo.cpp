@@ -10,24 +10,24 @@ void CDemo::Initialize()
 	MaterialFolder = L"";
 	ShaderFile = L"TerrainNormal.fx";
 
-	CreateTerrain(); 
-	
+	CreateTerrain();
+
 	CreateFloor();
 	CreateCube();
 	//CreateSphere();
 	//CreateAirplane();
 
-	//CreateKachujin();
-	CreateKachujin_Old();
+	CreateKachujin();
+	//CreateKachujin_Old();
 	CreateTurtle();
 }
 
 void CDemo::Destroy()
 {
-	Delete(Terrain); 
+	Delete(Terrain);
 
-	for(auto& render : Renders)
-		Delete(render); 
+	for (auto& render : Renders)
+		Delete(render);
 }
 
 void CDemo::Tick()
@@ -37,12 +37,12 @@ void CDemo::Tick()
 	ImGui::SeparatorText("Render Pass");
 	static int pass = 0;
 	ImGui::SliderInt("Pass", (int*)&pass, 0, 1);
-	
+
 	ImGui::SeparatorText("Model");
 	static int prev = 0;
 	ImGui::SliderInt("Model", (int*)&ModelIndex, 0, Renders.size() - 1);
 
-	
+
 	//static int clipNumber = 0;
 	//if (prev != ModelIndex)
 	//{
@@ -65,7 +65,7 @@ void CDemo::Tick()
 	//}
 
 
-	for(auto render : Renders)
+	for (auto render : Renders)
 		render->Tick();
 
 	if (BoneDebugger != nullptr)
@@ -74,7 +74,7 @@ void CDemo::Tick()
 
 void CDemo::PreRender()
 {
-	
+
 }
 
 void CDemo::Render()
@@ -84,10 +84,10 @@ void CDemo::Render()
 	//Terrain->SetPass(Pass);
 	//Terrain->Render();
 
-	for(auto render : Renders)
+	for (auto render : Renders)
 		render->Render();
 
-	if(BoneDebugger != nullptr)
+	if (BoneDebugger != nullptr)
 		BoneDebugger->Render();
 }
 
@@ -131,7 +131,7 @@ void CDemo::CreateFloor()
 {
 	Shader = CShaders::Get()->GetShader(L"Cube.fx");
 	CMeshRender* render = new CMeshRender(Shader);
-	render->ReadMaterial(MaterialFolder + L"Plane"); 
+	render->ReadMaterial(MaterialFolder + L"Plane");
 	render->ReadMesh(L"Plane");
 
 	CTransform* t = render->AddTransform();
@@ -157,7 +157,7 @@ void CDemo::CreateAirplane()
 	t->SetScale(100.0f);
 	t->UpdateWorld();
 
-	Renders.push_back(render);	
+	Renders.push_back(render);
 
 	DrawModelBone(render);
 }
@@ -184,12 +184,12 @@ void CDemo::CreateKachujin()
 	render->ReadMaterial(MaterialFolder + L"Kachujin");
 	render->ReadMesh(L"Kachujin/Kachujin");
 	render->ReadAnimation(L"Kachujin/Idle");
-	render->Finish_ReadDatas(); 
+	render->Finish_ReadDatas();
 
-	for (float x =75.0f; x < 75.0f; x++)
+	for (float x = -7.0f; x <= 7.0f; x++)
 	{
 		CTransform* t = render->AddTransform();
-		t->SetPosition(FVector(x, 11.5f, 64.0f));
+		t->SetPosition(FVector(Position.X + x, 11.5f, Position.Z));
 		t->SetScale(100.0f);
 		t->UpdateWorld();
 	}
@@ -210,11 +210,11 @@ void CDemo::CreateKachujin_Old()
 	render->ReadAnimation(L"Kachujin_Old/Walk");
 	render->Finish_ReadDatas();
 
-	int index = 0; 
-	for (float x = -7.0f; x <= 7.0; x+=0.1f)
+	int index = 0;
+	for (float x = -7.0f; x <= 7.0; x += 0.1f)
 	{
 		CTransform* t = render->AddTransform();
-		t->SetPosition(FVector(Position.X + x, -5.5f, Position.Z+0.5f));
+		t->SetPosition(FVector(Position.X + x, -5.5f, Position.Z + 0.5f));
 		t->UpdateWorld();
 		int clip = FMath::Random(0, 3);
 		render->ChangeClip(index++, clip);
@@ -240,7 +240,7 @@ void CDemo::CreateTurtle()
 	for (float x = -7.0f; x <= 7.0; x += 0.1f)
 	{
 		CTransform* t = render->AddTransform();
-		t->SetPosition(FVector(Position.X + x, -5.5f, Position.Z ));
+		t->SetPosition(FVector(Position.X + x, -5.5f, Position.Z));
 		t->SetScale(0.5f);
 		t->UpdateWorld();
 		int clip = FMath::Random(0, 3);

@@ -3,13 +3,13 @@
 #include "Systems/Window.h"
 
 #include "Demo.h"
-#include "TextureBufferDemo.h"
+#include "GetAnimationBoneDemo.h"
 
 
 void CMain::Initialize()
 {
-	Push_Main(CTextureBufferDemo);
-	//Push_Main(CDemo);
+	//Push_Main(GetAnimationBoneDemo);
+	Push_Main(CDemo);
 }
 
 void CMain::Destroy()
