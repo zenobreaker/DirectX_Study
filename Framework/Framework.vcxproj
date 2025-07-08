@@ -172,6 +172,10 @@ copy /Y "$(SolutionDir)Debug\$(ProjectName).pdb" "$(SolutionDir)UnitTest\"</Comm
     <ClCompile Include="Model\ModelBone.cpp" />
     <ClCompile Include="Model\ModelMesh.cpp" />
     <ClCompile Include="Model\SphereDebugDrawer.cpp" />
+    <ClCompile Include="Objects\Billboard.cpp" />
+    <ClCompile Include="Objects\Collider.cpp" />
+    <ClCompile Include="Objects\CubeMap.cpp" />
+    <ClCompile Include="Objects\DynamicCubeMap.cpp" />
     <ClCompile Include="PostEffects\Bloom.cpp" />
     <ClCompile Include="PostEffects\Blur.cpp" />
     <ClCompile Include="PostEffects\PostEffect.cpp" />
@@ -183,6 +187,7 @@ copy /Y "$(SolutionDir)Debug\$(ProjectName).pdb" "$(SolutionDir)UnitTest\"</Comm
     <ClCompile Include="Renders\Projector.cpp" />
     <ClCompile Include="Renders\Render2D.cpp" />
     <ClCompile Include="Renders\Renderer.cpp" />
+    <ClCompile Include="Renders\RenderLine.cpp" />
     <ClCompile Include="Renders\Shader.cpp" />
     <ClCompile Include="Renders\Texture.cpp" />
     <ClCompile Include="Renders\Transform.cpp" />
@@ -223,6 +228,10 @@ copy /Y "$(SolutionDir)Debug\$(ProjectName).pdb" "$(SolutionDir)UnitTest\"</Comm
     <ClInclude Include="Model\ModelBone.h" />
     <ClInclude Include="Model\ModelMesh.h" />
     <ClInclude Include="Model\SphereDebugDrawer.h" />
+    <ClInclude Include="Objects\Billboard.h" />
+    <ClInclude Include="Objects\Collider.h" />
+    <ClInclude Include="Objects\CubeMap.h" />
+    <ClInclude Include="Objects\DynamicCubeMap.h" />
     <ClInclude Include="PostEffects\Bloom.h" />
     <ClInclude Include="PostEffects\Blur.h" />
     <ClInclude Include="PostEffects\PostEffect.h" />
@@ -234,6 +243,7 @@ copy /Y "$(SolutionDir)Debug\$(ProjectName).pdb" "$(SolutionDir)UnitTest\"</Comm
     <ClInclude Include="Renders\Projector.h" />
     <ClInclude Include="Renders\Render2D.h" />
     <ClInclude Include="Renders\Renderer.h" />
+    <ClInclude Include="Renders\RenderLine.h" />
     <ClInclude Include="Renders\Shader.h" />
     <ClInclude Include="Renders\Texture.h" />
     <ClInclude Include="Renders\Transform.h" />

@@ -3,9 +3,16 @@
 
 void GetAnimationBoneDemo::Initialize()
 {
+	CContext::Get()->GetCamera()->SetRotation(FVector(21, 0.0f, 0.0f));
+	CContext::Get()->GetCamera()->SetPosition(FVector(0, 5.5f, -20));
+	CContext::Get()->GetCamera()->SetMoveSpeed(10.0f);
+
+
 	MaterialFolder = L"";
 	CreatePlane();
 	CreateKachujin();
+
+	CreateCollision();
 }
 
 void GetAnimationBoneDemo::Destroy()
@@ -18,12 +25,20 @@ void GetAnimationBoneDemo::Tick()
 {
 	Plane->Tick();
 	Kachujin->Tick(); 
+
+	Collision->Tick();
 }
 
 void GetAnimationBoneDemo::Render()
 {
+	float x = sinf(CTimer::Get()->GetRunningTime() ) * 5.0f;
+
+	CRenderLine::Get()->Draw(FVector(x, 0, 0), FVector(x, 10., 0));
+
 	Plane->Render(); 
-	Kachujin->Tick();
+	Kachujin->Render();
+
+	Collision->Render();
 }
 
 void GetAnimationBoneDemo::CreatePlane()
@@ -34,8 +49,8 @@ void GetAnimationBoneDemo::CreatePlane()
 	Plane->ReadMesh(L"Plane");
 
 	CTransform* t = Plane->AddTransform();
-	t->SetPosition(FVector(Position.X, -5.5f, Position.Z));
-	t->SetScale(FVector(150, 15, 30));
+	t->SetPosition(FVector(Position.X, Position.Y, Position.Z));
+	t->SetScale(FVector(150, 15, 150));
 	t->UpdateWorld();
 
 	CMaterial* material = Plane->GetMaterial("WorldGridMaterial");
@@ -53,30 +68,44 @@ void GetAnimationBoneDemo::CreateKachujin()
 
 	
 	CTransform* t = Kachujin->AddTransform();
-	t->SetPosition(FVector(-5.0f, .0f, 0.0f));
-	t->SetScale(100.f);
-	t->UpdateWorld();
-
-	t = Kachujin->AddTransform();
-	t->SetPosition(FVector(-2.5f, .0f, 0.0f));
-	t->SetScale(0.01f);
-	t->UpdateWorld();
-
-	t = Kachujin->AddTransform();
-	t->SetPosition(FVector(0.0f, .0f, 0.0f));
-	t->SetScale(0.01f);
-	t->UpdateWorld();
-
-
-	t = Kachujin->AddTransform();
-	t->SetPosition(FVector(+2.5f, .0f, 0.0f));
-	t->SetScale(0.01f);
-	t->UpdateWorld();
-
-	t = Kachujin->AddTransform();
-	t->SetPosition(FVector(+5.0f, .0f, 0.0f));
-	t->SetScale(0.01f);
+	t->SetPosition(FVector(Position.X - 5.0f, Position.Y, Position.Z));
+	t->SetScale(10.0f);
 	t->UpdateWorld();
 	
-	Kachujin->ChangeClip(0, 0);
+	t = Kachujin->AddTransform();
+	t->SetPosition(FVector(Position.X - 2.5f, Position.Y, Position.Z));
+	t->SetScale(10.0f);
+	t->UpdateWorld();
+
+	t = Kachujin->AddTransform();
+	t->SetPosition(FVector(Position.X, Position.Y, Position.Z));
+	t->SetScale(10.0f);
+	t->UpdateWorld();
+
+	t = Kachujin->AddTransform();
+	t->SetPosition(FVector(Position.X + 2.5f, Position.Y, Position.Z));
+	t->SetScale(10.0f);
+	t->UpdateWorld();
+
+	t = Kachujin->AddTransform();
+	t->SetPosition(FVector(Position.X + 5.0f, Position.Y, Position.Z));
+	t->SetScale(10.0f);
+	t->UpdateWorld();
+}
+
+void GetAnimationBoneDemo::CreateTurtle()
+{
+
+}
+
+void GetAnimationBoneDemo::CreateCollision()
+{
+
+	Collision = new FColliderObject();
+	Collision->Origin = new CTransform();
+	Collision->Origin->SetPosition(FVector::Zero);
+	Collision->Origin->SetScale(FVector::One);
+
+	Collision->Relative = new CTransform();
+	Collision->Collider = new CCollider(Collision->Relative, Collision->Origin);
 }

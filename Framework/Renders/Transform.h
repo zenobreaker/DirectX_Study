@@ -3,6 +3,7 @@
 class CTransform
 {
 public:
+	CTransform();
 	CTransform(CShader* InShader);
 	CTransform(FMatrix* InMatrix);
 	~CTransform();

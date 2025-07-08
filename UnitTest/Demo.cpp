@@ -186,11 +186,10 @@ void CDemo::CreateKachujin()
 	render->ReadAnimation(L"Kachujin/Idle");
 	render->Finish_ReadDatas();
 
-	for (float x = -7.0f; x <= 7.0f; x++)
+	for (float x = -7.0f; x <= 7.0; x += 0.1f)
 	{
 		CTransform* t = render->AddTransform();
-		t->SetPosition(FVector(Position.X + x, 11.5f, Position.Z));
-		t->SetScale(100.0f);
+		t->SetPosition(FVector(Position.X + x, -5.5f, Position.Z + 0.5f));
 		t->UpdateWorld();
 	}
 

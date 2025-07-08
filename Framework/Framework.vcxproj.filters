@@ -143,10 +143,24 @@
     <ClCompile Include="Model\SphereDebugDrawer.cpp">
       <Filter>Model</Filter>
     </ClCompile>
+    <ClCompile Include="Objects\Billboard.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\CubeMap.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\DynamicCubeMap.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects\Collider.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Renders\RenderLine.cpp">
+      <Filter>Renders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework.h" />
-    <ClInclude Include="Definitions.h" />
     <ClInclude Include="Systems\D3D.h">
       <Filter>Systems</Filter>
     </ClInclude>
@@ -294,6 +308,22 @@
     <ClInclude Include="Model\SphereDebugDrawer.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="Objects\DynamicCubeMap.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Billboard.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\CubeMap.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Collider.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Renders\RenderLine.h">
+      <Filter>Renders</Filter>
+    </ClInclude>
+    <ClInclude Include="Definitions.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Systems">
@@ -319,6 +349,9 @@
     </Filter>
     <Filter Include="VIewer">
       <UniqueIdentifier>{86808b59-7a94-4e82-b8f8-4f94cc9691c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects">
+      <UniqueIdentifier>{70157196-2284-4590-9642-776c9cc9f8a7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

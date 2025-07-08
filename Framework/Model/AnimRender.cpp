@@ -7,6 +7,9 @@ CAnimRender::CAnimRender(CShader* InShader)
 	sClipSRV = Shader->AsSRV("AnimationClipMaps");
 
 	CBuffer = new CConstantBuffer(Shader, "CB_AnimBlendingData", &AnimBlendingData, sizeof(FAnimBlendingDesc) * MAX_INSTANCE_COUNT);
+
+	ComputeShader = new CShader(L"GetAnimationBone.fx");
+	AttachedBoneBuffer = new CConstantBuffer(ComputeShader, "CB_AttachedBone", &AttachedBoneData, sizeof(FComputeAttachedBone));
 }
 
 CAnimRender::~CAnimRender()
@@ -18,6 +21,12 @@ CAnimRender::~CAnimRender()
 	Release(ClipSRV);
 
 	Delete(CBuffer);
+
+	Delete(ComputeBuffer);
+	DeleteArray(InputDatas);
+	DeleteArray(OutputDatas);
+
+	Delete(AttachedBoneBuffer);
 }
 
 void CAnimRender::Tick()
@@ -47,6 +56,14 @@ void CAnimRender::Tick()
 			}
 		}
 	}//for(i)	
+
+	if (ComputeBuffer != nullptr)
+	{
+		AttachedBoneBuffer->Render(); 
+
+		sComputeInputSRV->SetResource(*ComputeBuffer);
+		sComputeOutpuUAV->SetUnorderedAccessView(*ComputeBuffer);
+	}
 
 	Super::Tick();
 }
@@ -141,6 +158,8 @@ void CAnimRender::Finish_ReadDatas()
 		ReadAnimationData(name);
 
 	CreateClipTransforms();
+	
+	CreateComputeData();
 
 	for (UINT i = 0; i < MAX_INSTANCE_COUNT; i++)
 		ChangeClip(i, -1);
@@ -202,9 +221,7 @@ void CAnimRender::CreateClipTransforms()
 
 		//Clear
 		{
-			for (CModelAnimation* animation : Animations)
-				animation->DeleteClipTransform();
-
+	
 			VirtualFree(p, 0, MEM_RELEASE);
 		}
 
@@ -221,7 +238,6 @@ void CAnimRender::CreateClipTransforms()
 		}
 	}
 }
-
 
 
 void CAnimRender::ChangeClip(int InIndex, int InClipIndex, float TakeTime, float PlaySpeed)
@@ -256,3 +272,40 @@ void CAnimRender::ChangeClip(int InIndex, int InClipIndex, float TakeTime, float
 
 	ClipChanges.push_back(InIndex);
 }
+
+void CAnimRender::CreateComputeData()
+{
+	UINT clipCount = Animations.size();
+	UINT inputSize = clipCount * MAX_MODEL_KEYFRAMES * MAX_MODEL_TRANSFORMS;
+	UINT outputSize = MAX_INSTANCE_COUNT;
+
+	InputDatas = new FComputeDesc[inputSize];
+
+	UINT count = 0;
+	for (UINT clipIndex = 0; clipIndex < clipCount; clipIndex++)
+	{
+		for (UINT frameIndex = 0; frameIndex < MAX_MODEL_KEYFRAMES; frameIndex++)
+		{
+			for (UINT boneIndex = 0; boneIndex < MAX_MODEL_TRANSFORMS; boneIndex++)
+			{
+				InputDatas[count].Bone = Animations[clipIndex]->ClipTransform->Transform[frameIndex][boneIndex];
+
+				count++;
+			}//for(boneIndex)
+		}//for(frameIndex)
+	}//for(clipIndex)
+
+	for (CModelAnimation* animation : Animations)
+		animation->DeleteClipTransform();
+
+	ComputeBuffer = new CStructuredBuffer(InputDatas, sizeof(FComputeDesc), inputSize, sizeof(FComputeDesc), outputSize);
+	OutputDatas = new FComputeDesc[outputSize];
+
+	for (UINT i = 0; i < outputSize; i++)
+		OutputDatas[i].Bone = FMatrix::Identity;
+
+	sComputeInputSRV = ComputeShader->AsSRV("CS_ModelInputData");
+	sComputeOutpuUAV = ComputeShader->AsUAV("CS_ModelOutputData");
+}
+
+

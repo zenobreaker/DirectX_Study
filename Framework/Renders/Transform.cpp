@@ -1,6 +1,11 @@
 #include "Framework.h"
 #include "Transform.h"
 
+CTransform::CTransform()
+{
+	BufferData.World = FMatrix::Identity;
+}
+
 CTransform::CTransform(CShader* InShader)
 	: Shader(InShader)
 {
