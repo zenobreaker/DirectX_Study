@@ -80,6 +80,7 @@ using namespace chrono;
 #include "Renders/Renderer.h"
 #include "Renders/Lighting.h"
 #include "Renders/Render2D.h"
+#include "Renders/RenderLine.h"
 #include "Renders/Projector.h"
 
 #include "Utilities/String.h"
@@ -96,6 +97,7 @@ using namespace chrono;
 #include "Objects/CubeMap.h"
 #include "Objects/Billboard.h"
 #include "Objects/DynamicCubeMap.h"
+#include "Objects/Collider.h"
 
 #include "Particle/ParticleData.h"
 #include "Particle/Particle.h"

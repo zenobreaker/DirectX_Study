@@ -162,3 +162,41 @@ private:
 
 	ID3D11ShaderResourceView* OutputSRV; 
 };
+
+//-----------------------------------------------------------------------------
+class CStructuredBuffer : public CCsResource
+{
+public:
+	// Output = 0이면 Input과 같은 자료형 사용을 의미
+	CStructuredBuffer(void* InInputData, UINT InInputStride, UINT InInputCount, UINT InOutputStride = 0, UINT InOutputCount = 0);
+	~CStructuredBuffer();
+
+private:
+
+	void CreateInput() override;
+	void CreateSRV() override;
+	void CreateOutput() override;
+	void CreateUAV() override;
+	void CreateResult() override;
+
+
+public:
+	void SetInputData(void* InData);
+	void GetOutputData(void* OutData);
+
+public:
+	UINT GetInputByteWidth() { return InputStride * InputCount; }
+	UINT GetOutputByteWidth() { return OutputStride* OutputCount; }
+
+private:
+	CShader* Shader; 
+
+	void* InputData = nullptr;
+
+	UINT InputStride = 0; // 구조체의 크기
+	UINT InputCount = 0;
+
+
+	UINT OutputStride = 0;
+	UINT OutputCount = 0;
+};

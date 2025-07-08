@@ -17,6 +17,7 @@
     </ClInclude>
     <ClInclude Include="Demo.h" />
     <ClInclude Include="GetAnimationBoneDemo.h" />
+    <ClInclude Include="StructuredBufferDemo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -27,5 +28,6 @@
     </ClCompile>
     <ClCompile Include="Demo.cpp" />
     <ClCompile Include="GetAnimationBoneDemo.cpp" />
+    <ClCompile Include="StructuredBufferDemo.cpp" />
   </ItemGroup>
 </Project>

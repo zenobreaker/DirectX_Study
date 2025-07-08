@@ -58,4 +58,34 @@ private:
 	CConstantBuffer* CBuffer;
 
 	vector<UINT> ClipChanges;
+
+//-----------------------------------------------------------------------------
+private:
+	void CreateComputeData();
+
+// Compute Shader 용 구조체 및 관련 변수
+private:
+	struct FComputeDesc
+	{
+		FMatrix Bone;
+	};
+
+	struct FComputeAttachedBone
+	{
+		UINT BoneIndex = 0;
+
+		float Padding[3];
+	} AttachedBoneData;
+
+private:
+	CShader* ComputeShader;
+	CStructuredBuffer* ComputeBuffer = nullptr;
+
+	FComputeDesc* InputDatas = nullptr;
+	FComputeDesc* OutputDatas = nullptr;
+
+	ESRV* sComputeInputSRV;
+	EUAV* sComputeOutpuUAV;
+
+	CConstantBuffer* AttachedBoneBuffer = nullptr;
 };
