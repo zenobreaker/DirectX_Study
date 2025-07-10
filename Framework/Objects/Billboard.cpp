@@ -19,7 +19,8 @@ void CBillboard::Tick()
 	ImGui::SeparatorText("Billboard");
 
 	ImGui::InputInt("Pass Billboard", (int*)&Pass);
-	Pass = FMath::Clamp<UINT>(Pass, 5, 6);
+	//Pass = FMath::Clamp<UINT>(Pass, 5, 6);
+	Pass = 0;
 
 	ImGui::InputFloat("Brightnesss Billboard", &Data.Brightness, 0.1f);
 

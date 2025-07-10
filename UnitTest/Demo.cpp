@@ -10,16 +10,13 @@ void CDemo::Initialize()
 	MaterialFolder = L"";
 	ShaderFile = L"TerrainNormal.fx";
 
-	CreateTerrain();
+	//CreateFloor();
+	CreateBillboard();
 
-	CreateFloor();
-	CreateCube();
-	//CreateSphere();
-	//CreateAirplane();
 
-	CreateKachujin();
+	//CreateKachujin();
 	//CreateKachujin_Old();
-	CreateTurtle();
+	//CreateTurtle();
 }
 
 void CDemo::Destroy()
@@ -70,6 +67,8 @@ void CDemo::Tick()
 
 	if (BoneDebugger != nullptr)
 		BoneDebugger->Tick();
+
+	Billboard->Tick(); 
 }
 
 void CDemo::PreRender()
@@ -89,6 +88,8 @@ void CDemo::Render()
 
 	if (BoneDebugger != nullptr)
 		BoneDebugger->Render();
+
+	Billboard->Render();
 }
 
 void CDemo::PostRender()
@@ -103,6 +104,32 @@ void CDemo::CreateTerrain()
 	Terrain->SetLowMap(L"Terrain/Grass.png", L"Terrain/Grass_Normal.png");
 	Terrain->SetHighMap(L"Terrain/Grass2.png", L"Terrain/Grass2_Normal.png");
 	Terrain->SetSlopeMap(L"Terrain/Rock.png", L"Terrain/Rock_Normal.png");
+}
+
+void CDemo::CreateBillboard()
+{
+	Billboard = new CBillboard(L"Grass.fx");
+	Billboard->AddTexture(L"Terrain/Billboard.png");
+	Billboard->AddTexture(L"Terrain/Billboard2.png");
+	Billboard->AddTexture(L"Terrain/Billboard3.png");
+
+	for (UINT z = 0; z < 30; z += 3)
+	{
+		for (UINT x = 0; x < 30; x += 3)
+		{
+
+			FVector position = Position;
+			position.X = Position.X + ((float)x + FMath::Random(0.0f, 2.5f));
+			position.Y = 0.0f;
+			position.Z = Position.Z + ((float)z + FMath::Random(0.0f, 2.5f));
+
+			float randomX = FMath::Random(1.0f, 2.0f);
+			float randomY = FMath::Random(3.0f, 6.0f);
+
+			int random = FMath::Random(0, 2);
+			Billboard->AddPosition(position, FVector2D(randomX, randomY), random);
+		}
+	}
 }
 
 void CDemo::CreateCube()
@@ -135,8 +162,8 @@ void CDemo::CreateFloor()
 	render->ReadMesh(L"Plane");
 
 	CTransform* t = render->AddTransform();
-	t->SetPosition(FVector(Position.X, -5.5f, Position.Z));
-	t->SetScale(FVector(150, 15, 30));
+	t->SetPosition(FVector(Position.X, 0.0f, Position.Z));
+	t->SetScale(FVector(30, 15, 30));
 	t->UpdateWorld();
 
 	CMaterial* material = render->GetMaterial("WorldGridMaterial");
@@ -186,10 +213,10 @@ void CDemo::CreateKachujin()
 	render->ReadAnimation(L"Kachujin/Idle");
 	render->Finish_ReadDatas();
 
-	for (float x = -7.0f; x <= 7.0; x += 0.1f)
+	for (float x = -7.0f; x <= 7.0; x += 1.0f)
 	{
 		CTransform* t = render->AddTransform();
-		t->SetPosition(FVector(Position.X + x, -5.5f, Position.Z + 0.5f));
+		t->SetPosition(FVector(Position.X + x, .0f, Position.Z + 0.5f));
 		t->UpdateWorld();
 	}
 
@@ -210,10 +237,10 @@ void CDemo::CreateKachujin_Old()
 	render->Finish_ReadDatas();
 
 	int index = 0;
-	for (float x = -7.0f; x <= 7.0; x += 0.1f)
+	for (float x = -1.0f; x <= 1.0f; x += 1.0f)
 	{
 		CTransform* t = render->AddTransform();
-		t->SetPosition(FVector(Position.X + x, -5.5f, Position.Z + 0.5f));
+		t->SetPosition(FVector(Position.X + x, 0.0f, Position.Z + 0.5f));
 		t->UpdateWorld();
 		int clip = FMath::Random(0, 3);
 		render->ChangeClip(index++, clip);

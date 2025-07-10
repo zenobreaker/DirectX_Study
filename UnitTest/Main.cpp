@@ -3,15 +3,11 @@
 #include "Systems/Window.h"
 
 #include "Demo.h"
-#include "GetAnimationBoneDemo.h"
-#include "StructuredBufferDemo.h"
 
 
 void CMain::Initialize()
 {
-	Push_Main(CStructuredBufferDemo);
-	Push_Main(GetAnimationBoneDemo);
-	//Push_Main(CDemo);
+	Push_Main(CDemo);
 }
 
 void CMain::Destroy()

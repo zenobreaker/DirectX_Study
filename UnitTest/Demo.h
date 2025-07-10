@@ -17,6 +17,7 @@ public:
 
 private:
 	void CreateTerrain();
+	
 
 	void CreateCube(); 
 	void CreateFloor(); 
@@ -25,6 +26,9 @@ private:
 	void CreateKachujin(); 
 	void CreateKachujin_Old(); 
 	void CreateTurtle();
+
+	void CreateBillboard();
+
 
 	void DrawModelBone(CMeshRender* InMesh);
 private:
@@ -40,6 +44,7 @@ private:
 	FVector Position = FVector(120.0f, 2.0f, 90.0f);
 
 	CTerrain* Terrain;
+	CBillboard* Billboard;
 
 	vector<CMeshRender*> Renders; 
 
