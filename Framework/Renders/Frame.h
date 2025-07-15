@@ -18,6 +18,9 @@ private:
 
 		float RunningTime;
 		float Padding[3];
+
+		FPlane CullPlane[4];
+		FPlane ClipPlane[4];
     } FrameData;
 
 private:

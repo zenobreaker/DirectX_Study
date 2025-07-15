@@ -17,11 +17,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Shaders", "_Shaders", "{68
 		..\_Shaders\00_Model.fx = ..\_Shaders\00_Model.fx
 		..\_Shaders\00_Render2D.fx = ..\_Shaders\00_Render2D.fx
 		..\_Shaders\00_RenderLine.fx = ..\_Shaders\00_RenderLine.fx
+		..\_Shaders\00_Sky.fx = ..\_Shaders\00_Sky.fx
 		..\_Shaders\00_Terrain.fx = ..\_Shaders\00_Terrain.fx
-		..\_Shaders\GetAnimationBone.fx = ..\_Shaders\GetAnimationBone.fx
-		..\_Shaders\Grass.fx = ..\_Shaders\Grass.fx
-		..\_Shaders\StructuredBuffer.fx = ..\_Shaders\StructuredBuffer.fx
-		..\_Shaders\TextureBuffer.fx = ..\_Shaders\TextureBuffer.fx
+		..\_Shaders\00_Weather.fx = ..\_Shaders\00_Weather.fx
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModelEditor", "ModelEditor\ModelEditor.vcxproj", "{8A3265D4-7D77-4B4F-940B-70481A5E3DAD}"

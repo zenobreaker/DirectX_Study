@@ -27,6 +27,8 @@ private:
 	void CreateKachujin_Old(); 
 	void CreateTurtle();
 
+	void CreateSky();
+	void CreateCubeMap();
 	void CreateBillboard();
 
 
@@ -43,10 +45,21 @@ private:
 
 	FVector Position = FVector(120.0f, 2.0f, 90.0f);
 
+	CSky* Sky;
+	CCubeMap* CubeMap;
 	CTerrain* Terrain;
 	CBillboard* Billboard;
 
 	vector<CMeshRender*> Renders; 
 
 	CSphereDebugDrawer* BoneDebugger = nullptr;
+
+private:
+	enum class EWeatherType
+	{
+		None = 0, Rain, Snow, Max,
+	} WeatherType;
+
+	CRain* Rain;
+	CSnow* Snow;
 };
