@@ -10,9 +10,10 @@ void CDemo::Initialize()
 	MaterialFolder = L"";
 	ShaderFile = L"TerrainNormal.fx";
 
-	//CreateFloor();
-	CreateBillboard();
-
+	CreateFloor();
+	//CreateBillboard();
+	CreateSky();
+	CreateCubeMap();
 
 	//CreateKachujin();
 	//CreateKachujin_Old();
@@ -22,6 +23,9 @@ void CDemo::Initialize()
 void CDemo::Destroy()
 {
 	Delete(Terrain);
+	Delete(Rain);
+	Delete(Sky);
+	Delete(CubeMap);
 
 	for (auto& render : Renders)
 		Delete(render);
@@ -40,35 +44,31 @@ void CDemo::Tick()
 	ImGui::SliderInt("Model", (int*)&ModelIndex, 0, Renders.size() - 1);
 
 
-	//static int clipNumber = 0;
-	//if (prev != ModelIndex)
-	//{
-	//	prev = ModelIndex;
-	//	clipNumber = 0;
-	//}
-	//
-	//int maxClip = 0;
-	//auto ar = dynamic_cast<CAnimRender*>(Renders[ModelIndex]);
-	//if (ar != nullptr)
-	//{
-	//	maxClip = ar->GetAnimationCount();
-	//}
-	//ImGui::SliderInt("ClipNumber", (int*)&clipNumber, 0, maxClip-1);
-
-	//if (ImGui::Button("Change"))
-	//{
-	//	if (ar != nullptr)
-	//		ar->ChangeClip(0, clipNumber);
-	//}
-
-
 	for (auto render : Renders)
 		render->Tick();
 
 	if (BoneDebugger != nullptr)
 		BoneDebugger->Tick();
+	
+	UINT weatherSelected = (UINT)WeatherType;
 
-	Billboard->Tick(); 
+	Sky->Tick();
+
+	ImGui::Separator();
+	ImGui::SeparatorText("Weather");
+	ImGui::InputInt("Weather Type", (int*)&weatherSelected);
+	weatherSelected %= (UINT)EWeatherType::Max;
+	WeatherType = (EWeatherType)weatherSelected;
+
+	switch (WeatherType)
+	{
+		case EWeatherType::Rain: Rain->Tick(); break;
+		case EWeatherType::Snow: Snow->Tick(); break;
+	}
+
+
+
+	CubeMap->Tick(); 
 }
 
 void CDemo::PreRender()
@@ -80,6 +80,8 @@ void CDemo::Render()
 {
 	ImGui::SliderInt("Pass ", (int*)&Pass, 1, 0);
 
+	Sky->Render();
+	
 	//Terrain->SetPass(Pass);
 	//Terrain->Render();
 
@@ -88,8 +90,13 @@ void CDemo::Render()
 
 	if (BoneDebugger != nullptr)
 		BoneDebugger->Render();
+	CubeMap->Render();
 
-	Billboard->Render();
+	switch (WeatherType)
+	{
+		case EWeatherType::Rain: Rain->Render(); break;
+		case EWeatherType::Snow: Snow->Render(); break;
+	}
 }
 
 void CDemo::PostRender()
@@ -104,6 +111,22 @@ void CDemo::CreateTerrain()
 	Terrain->SetLowMap(L"Terrain/Grass.png", L"Terrain/Grass_Normal.png");
 	Terrain->SetHighMap(L"Terrain/Grass2.png", L"Terrain/Grass2_Normal.png");
 	Terrain->SetSlopeMap(L"Terrain/Rock.png", L"Terrain/Rock_Normal.png");
+}
+
+void CDemo::CreateSky()
+{
+	Sky = new CSky(L"Environments/Sky1024.dds", L"99_Environment.fx", 100.0f);
+	Rain = new CRain(FVector(300, 100, 500), 1e+4f);
+	Snow = new CSnow(FVector(300, 100, 500), 1e+4f);
+}
+
+void CDemo::CreateCubeMap()
+{
+	CubeMap = new CCubeMap(L"63/Floor_Cube", L"Cube", L"Environments/Sky1024.dds");
+	CTransform* t = CubeMap->GetTransform();
+	t->SetPosition(FVector(Position.X, 1.0f, Position.Z));
+	t->SetScale(FVector(2.0f));
+	t->UpdateWorld();
 }
 
 void CDemo::CreateBillboard()
