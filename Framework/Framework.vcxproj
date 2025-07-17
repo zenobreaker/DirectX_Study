@@ -97,7 +97,9 @@
       <Command>copy /Y "$(SolutionDir)Debug\$(ProjectName).lib" "$(SolutionDir)ModelEditor\"
 copy /Y "$(SolutionDir)Debug\$(ProjectName).pdb" "$(SolutionDir)ModelEditor\"
 copy /Y "$(SolutionDir)Debug\$(ProjectName).lib" "$(SolutionDir)UnitTest\"
-copy /Y "$(SolutionDir)Debug\$(ProjectName).pdb" "$(SolutionDir)UnitTest\"</Command>
+copy /Y "$(SolutionDir)Debug\$(ProjectName).pdb" "$(SolutionDir)UnitTest\"
+copy /Y "$(SolutionDir)Debug\$(ProjectName).lib" "$(SolutionDir)ParticleEditor\"
+copy /Y "$(SolutionDir)Debug\$(ProjectName).pdb" "$(SolutionDir)ParticleEditor\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -176,6 +178,8 @@ copy /Y "$(SolutionDir)Debug\$(ProjectName).pdb" "$(SolutionDir)UnitTest\"</Comm
     <ClCompile Include="Objects\Collider.cpp" />
     <ClCompile Include="Objects\CubeMap.cpp" />
     <ClCompile Include="Objects\DynamicCubeMap.cpp" />
+    <ClCompile Include="Particle\Particle.cpp" />
+    <ClCompile Include="Particle\Particle_ReadFile.cpp" />
     <ClCompile Include="PostEffects\Bloom.cpp" />
     <ClCompile Include="PostEffects\Blur.cpp" />
     <ClCompile Include="PostEffects\PostEffect.cpp" />
@@ -232,6 +236,8 @@ copy /Y "$(SolutionDir)Debug\$(ProjectName).pdb" "$(SolutionDir)UnitTest\"</Comm
     <ClInclude Include="Objects\Collider.h" />
     <ClInclude Include="Objects\CubeMap.h" />
     <ClInclude Include="Objects\DynamicCubeMap.h" />
+    <ClInclude Include="Particle\Particle.h" />
+    <ClInclude Include="Particle\ParticleData.h" />
     <ClInclude Include="PostEffects\Bloom.h" />
     <ClInclude Include="PostEffects\Blur.h" />
     <ClInclude Include="PostEffects\PostEffect.h" />

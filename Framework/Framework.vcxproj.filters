@@ -158,6 +158,12 @@
     <ClCompile Include="Renders\RenderLine.cpp">
       <Filter>Renders</Filter>
     </ClCompile>
+    <ClCompile Include="Particle\Particle.cpp">
+      <Filter>Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle\Particle_ReadFile.cpp">
+      <Filter>Particle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework.h" />
@@ -324,6 +330,12 @@
       <Filter>Renders</Filter>
     </ClInclude>
     <ClInclude Include="Definitions.h" />
+    <ClInclude Include="Particle\Particle.h">
+      <Filter>Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle\ParticleData.h">
+      <Filter>Particle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Systems">
@@ -352,6 +364,9 @@
     </Filter>
     <Filter Include="Objects">
       <UniqueIdentifier>{70157196-2284-4590-9642-776c9cc9f8a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Particle">
+      <UniqueIdentifier>{651bc4df-e41f-49f7-9599-55eac61239c1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
