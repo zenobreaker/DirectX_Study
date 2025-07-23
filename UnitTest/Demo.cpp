@@ -19,8 +19,7 @@ void CDemo::Initialize()
 
 	//CreateKachujin();
 	CreateKachujin_Old();
-	//CreateBillboard();
-	CreateSky();
+	//CreateBillboard();;
 
 	//CreateSphere();
 
@@ -34,8 +33,6 @@ void CDemo::Destroy()
 {
 
 	Delete(Terrain);
-	Delete(Sky);
-
 
 	for(auto& render : Renders)
 		Delete(render); 
@@ -79,8 +76,6 @@ void CDemo::Tick()
 	if (BoneDebugger != nullptr)
 		BoneDebugger->Tick();
 
-
-	Sky->Tick();
 
 	//switch (WeatherType)
 	//{
@@ -127,40 +122,6 @@ void CDemo::CreateTerrain()
 	Terrain->SetLowMap(L"Terrain/Grass.png", L"Terrain/Grass_Normal.png");
 	Terrain->SetHighMap(L"Terrain/Grass2.png", L"Terrain/Grass2_Normal.png");
 	Terrain->SetSlopeMap(L"Terrain/Rock.png", L"Terrain/Rock_Normal.png");
-}
-
-void CDemo::CreateSky()
-{
-	Sky = new CSky(L"Environments/Sky1024.dds", L"99_Environment.fx", 100.0f);
-	//Rain = new CRain(FVector(300, 100, 500), 1e+4f);
-	//Snow = new CSnow(FVector(300, 100, 500), 1e+4f);
-}
-
-
-void CDemo::CreateBillboard()
-{
-	Billboard = new CBillboard(L"Grass.fx");
-	Billboard->AddTexture(L"Terrain/Billboard.png");
-	Billboard->AddTexture(L"Terrain/Billboard2.png");
-	Billboard->AddTexture(L"Terrain/Billboard3.png");
-
-	for (UINT z = 0; z < 30; z += 3)
-	{
-		for (UINT x = 0; x < 30; x += 3)
-		{
-
-			FVector position = Position;
-			position.X = Position.X + ((float)x + FMath::Random(0.0f, 2.5f));
-			position.Y = 0.0f;
-			position.Z = Position.Z + ((float)z + FMath::Random(0.0f, 2.5f));
-
-			float randomX = FMath::Random(1.0f, 2.0f);
-			float randomY = FMath::Random(3.0f, 6.0f);
-
-			int random = FMath::Random(0, 2);
-			Billboard->AddPosition(position, FVector2D(randomX, randomY), random);
-		}
-	}
 }
 
 void CDemo::CreateCube()
