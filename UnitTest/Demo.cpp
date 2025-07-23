@@ -14,7 +14,7 @@ void CDemo::Initialize()
 
 	//CreateBillboard();
 	CreateSky();
-	CreateCubeMap();
+
 	//CreateSphere();
 
 	//CreateKachujin();
@@ -27,8 +27,6 @@ void CDemo::Destroy()
 {
 
 	Delete(Terrain);
-	Delete(Snow);
-	Delete(Rain);
 	Delete(Sky);
 	Delete(CubeMap);
 
@@ -52,23 +50,13 @@ void CDemo::Tick()
 	for (auto render : Renders)
 	{
 		render->SetPass(pass);
-
 		render->Tick();
 	}
 
 	if (BoneDebugger != nullptr)
 		BoneDebugger->Tick();
 
-	
-	UINT weatherSelected = (UINT)WeatherType;
-
 	Sky->Tick();
-
-	ImGui::Separator();
-	ImGui::SeparatorText("Weather");
-	ImGui::InputInt("Weather Type", (int*)&weatherSelected);
-	weatherSelected %= (UINT)EWeatherType::Max;
-	WeatherType = (EWeatherType)weatherSelected;
 
 	//switch (WeatherType)
 	//{
@@ -101,6 +89,7 @@ void CDemo::Render()
 
 	CubeMap->Render();
 
+
 	//switch (WeatherType)
 	//{
 	//	case EWeatherType::Rain: Rain->Render(); break;
@@ -129,14 +118,6 @@ void CDemo::CreateSky()
 	//Snow = new CSnow(FVector(300, 100, 500), 1e+4f);
 }
 
-void CDemo::CreateCubeMap()
-{
-	CubeMap = new CCubeMap(L"63/Floor_Cube", L"Cube", L"Environments/Sky1024.dds");
-	CTransform* t = CubeMap->GetTransform();
-	t->SetPosition(FVector(Position.X, 1.0f, Position.Z));
-	t->SetScale(FVector(2.0f));
-	t->UpdateWorld();
-}
 
 void CDemo::CreateBillboard()
 {
@@ -285,7 +266,7 @@ void CDemo::CreateKachujin_Old()
 void CDemo::CreatTurtle()
 {
 	Shader = CShaders::Get()->GetShader(L"Model.fx");
-	
+
 }
 
 void CDemo::CreateTurtle_Anim()
@@ -301,6 +282,7 @@ void CDemo::CreateTurtle_Anim()
 	render->Finish_ReadDatas();
 
 	int index = 0;
+
 	CTransform* t = render->AddTransform();
 	t->SetPosition(FVector(Position.X + 2.0f, 0, Position.Z));
 	t->SetScale(1.0f);

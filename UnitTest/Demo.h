@@ -29,9 +29,7 @@ private:
 	void CreateTurtle_Anim();
 
 	void CreateSky();
-	void CreateCubeMap();
 	void CreateBillboard();
-
 
 	void DrawModelBone(CMeshRender* InMesh);
 private:

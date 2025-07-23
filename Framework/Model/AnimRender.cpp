@@ -170,6 +170,7 @@ void CAnimRender::Finish_ReadDatas()
 
 	CreateComputeData();
 
+
 	for (UINT i = 0; i < MAX_INSTANCE_COUNT; i++)
 		ChangeClip(i, -1);
 }
@@ -230,6 +231,7 @@ void CAnimRender::CreateClipTransforms()
 
 		//Clear
 		{
+
 			VirtualFree(p, 0, MEM_RELEASE);
 		}
 
