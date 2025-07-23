@@ -25,10 +25,8 @@ void CDemo::Initialize()
 
 void CDemo::Destroy()
 {
-
 	Delete(Terrain);
 	Delete(Sky);
-	Delete(CubeMap);
 
 	for (auto& render : Renders)
 		Delete(render);
@@ -45,6 +43,7 @@ void CDemo::Tick()
 	ImGui::SeparatorText("Model");
 	static int prev = 0;
 	ImGui::SliderInt("Model", (int*)&ModelIndex, 0, Renders.size() - 1);
+
 
 
 	for (auto render : Renders)
@@ -64,7 +63,6 @@ void CDemo::Tick()
 	//	case EWeatherType::Snow: Snow->Tick(); break;
 	//}
 
-	CubeMap->Tick(); 
 }
 
 void CDemo::PreRender()
@@ -86,8 +84,6 @@ void CDemo::Render()
 
 	if (BoneDebugger != nullptr)
 		BoneDebugger->Render();
-
-	CubeMap->Render();
 
 
 	//switch (WeatherType)
