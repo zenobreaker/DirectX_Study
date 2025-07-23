@@ -13,37 +13,29 @@ void CDemo::Initialize()
 	CreateTerrain(); 
 	
 	CreateFloor();
-<<<<<<< Updated upstream
 	CreateCube();
 	//CreateSphere();
 	//CreateAirplane();
 
 	//CreateKachujin();
 	CreateKachujin_Old();
-	CreateTurtle();
-=======
 	//CreateBillboard();
 	CreateSky();
-	CreateCubeMap();
+
 	//CreateSphere();
 
 	//CreateKachujin();
 	//CreateKachujin_Old();
 	CreateTurtle_Anim();
->>>>>>> Stashed changes
+
 }
 
 void CDemo::Destroy()
 {
-<<<<<<< Updated upstream
-	Delete(Terrain); 
-=======
+
 	Delete(Terrain);
-	Delete(Snow);
-	Delete(Rain);
 	Delete(Sky);
-	Delete(CubeMap);
->>>>>>> Stashed changes
+
 
 	for(auto& render : Renders)
 		Delete(render); 
@@ -77,37 +69,18 @@ void CDemo::Tick()
 	//}
 	//ImGui::SliderInt("ClipNumber", (int*)&clipNumber, 0, maxClip-1);
 
-<<<<<<< Updated upstream
-	//if (ImGui::Button("Change"))
-	//{
-	//	if (ar != nullptr)
-	//		ar->ChangeClip(0, clipNumber);
-	//}
 
-
-	for(auto render : Renders)
-=======
 	for (auto render : Renders)
 	{
 		render->SetPass(pass);
->>>>>>> Stashed changes
 		render->Tick();
 	}
 
 	if (BoneDebugger != nullptr)
 		BoneDebugger->Tick();
-<<<<<<< Updated upstream
-=======
-	
-	UINT weatherSelected = (UINT)WeatherType;
+
 
 	Sky->Tick();
-
-	ImGui::Separator();
-	ImGui::SeparatorText("Weather");
-	ImGui::InputInt("Weather Type", (int*)&weatherSelected);
-	weatherSelected %= (UINT)EWeatherType::Max;
-	WeatherType = (EWeatherType)weatherSelected;
 
 	//switch (WeatherType)
 	//{
@@ -115,10 +88,6 @@ void CDemo::Tick()
 	//	case EWeatherType::Snow: Snow->Tick(); break;
 	//}
 
-
-
-	CubeMap->Tick(); 
->>>>>>> Stashed changes
 }
 
 void CDemo::PreRender()
@@ -138,16 +107,12 @@ void CDemo::Render()
 
 	if(BoneDebugger != nullptr)
 		BoneDebugger->Render();
-<<<<<<< Updated upstream
-=======
-	CubeMap->Render();
 
 	//switch (WeatherType)
 	//{
 	//	case EWeatherType::Rain: Rain->Render(); break;
 	//	case EWeatherType::Snow: Snow->Render(); break;
 	//}
->>>>>>> Stashed changes
 }
 
 void CDemo::PostRender()
@@ -164,8 +129,6 @@ void CDemo::CreateTerrain()
 	Terrain->SetSlopeMap(L"Terrain/Rock.png", L"Terrain/Rock_Normal.png");
 }
 
-<<<<<<< Updated upstream
-=======
 void CDemo::CreateSky()
 {
 	Sky = new CSky(L"Environments/Sky1024.dds", L"99_Environment.fx", 100.0f);
@@ -173,14 +136,6 @@ void CDemo::CreateSky()
 	//Snow = new CSnow(FVector(300, 100, 500), 1e+4f);
 }
 
-void CDemo::CreateCubeMap()
-{
-	CubeMap = new CCubeMap(L"63/Floor_Cube", L"Cube", L"Environments/Sky1024.dds");
-	CTransform* t = CubeMap->GetTransform();
-	t->SetPosition(FVector(Position.X, 1.0f, Position.Z));
-	t->SetScale(FVector(2.0f));
-	t->UpdateWorld();
-}
 
 void CDemo::CreateBillboard()
 {
@@ -208,7 +163,6 @@ void CDemo::CreateBillboard()
 	}
 }
 
->>>>>>> Stashed changes
 void CDemo::CreateCube()
 {
 	Shader = CShaders::Get()->GetShader(L"Model_Lighting.fx");
@@ -239,13 +193,8 @@ void CDemo::CreateFloor()
 	render->ReadMesh(L"Plane");
 
 	CTransform* t = render->AddTransform();
-<<<<<<< Updated upstream
-	t->SetPosition(FVector(Position.X, -5.5f, Position.Z));
-	t->SetScale(FVector(150, 15, 30));
-=======
 	t->SetPosition(FVector(Position.X, 0.0f, Position.Z));
 	t->SetScale(FVector(50, 15, 50));
->>>>>>> Stashed changes
 	t->UpdateWorld();
 
 	CMaterial* material = render->GetMaterial("WorldGridMaterial");
@@ -335,7 +284,7 @@ void CDemo::CreateKachujin_Old()
 void CDemo::CreatTurtle()
 {
 	Shader = CShaders::Get()->GetShader(L"Model.fx");
-	
+
 }
 
 void CDemo::CreateTurtle_Anim()
@@ -351,16 +300,6 @@ void CDemo::CreateTurtle_Anim()
 	render->Finish_ReadDatas();
 
 	int index = 0;
-<<<<<<< Updated upstream
-	for (float x = -7.0f; x <= 7.0; x += 0.1f)
-	{
-		CTransform* t = render->AddTransform();
-		t->SetPosition(FVector(Position.X + x, -5.5f, Position.Z ));
-		t->SetScale(0.5f);
-		t->UpdateWorld();
-		int clip = FMath::Random(0, 3);
-		render->ChangeClip(index++, clip);
-=======
 	
 	CTransform* t = render->AddTransform();
 	t->SetPosition(FVector(Position.X + 2.0f, 0, Position.Z));
@@ -368,7 +307,7 @@ void CDemo::CreateTurtle_Anim()
 	t->UpdateWorld();
 	/*int clip = FMath::Random(0, 3);
 	render->ChangeClip(index++, clip);*/
->>>>>>> Stashed changes
+
 
 	Renders.push_back(render);
 }

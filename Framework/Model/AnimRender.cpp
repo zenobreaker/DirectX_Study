@@ -48,17 +48,7 @@ void CAnimRender::Tick()
 		}
 	}//for(i)	
 
-<<<<<<< Updated upstream
-=======
-	if (ComputeBuffer != nullptr)
-	{
-		AttachedBoneBuffer->Render();
 
-		sComputeInputSRV->SetResource(*ComputeBuffer);
-		sComputeOutpuUAV->SetUnorderedAccessView(*ComputeBuffer);
-	}
-
->>>>>>> Stashed changes
 	Super::Tick();
 }
 
@@ -161,11 +151,7 @@ void CAnimRender::Finish_ReadDatas()
 	}
 
 	CreateClipTransforms();
-<<<<<<< Updated upstream
-=======
 
-	CreateComputeData();
->>>>>>> Stashed changes
 
 	for (UINT i = 0; i < MAX_INSTANCE_COUNT; i++)
 		ChangeClip(i, -1);
@@ -227,11 +213,9 @@ void CAnimRender::CreateClipTransforms()
 
 		//Clear
 		{
-<<<<<<< Updated upstream
 			for (CModelAnimation* animation : Animations)
 				animation->DeleteClipTransform();
-=======
->>>>>>> Stashed changes
+
 
 			VirtualFree(p, 0, MEM_RELEASE);
 		}
