@@ -96,13 +96,14 @@ void CModelAnimation::CalcClipTransform(const vector<CModelBone*>& InBones)
 			{
 				// 누락된 본 처리: 애니메이션 키프레임 없을 때,
 				// 로컬 트랜스폼 = 본 글로벌 * 부모 글로벌 역행렬 
-				FMatrix parentGlobal;
-				if (bone->GetParentIndex() < 0)
-					parentGlobal = FMatrix::Identity;
-				else
-					parentGlobal = InBones[bone->GetParentIndex()]->GetTransform();
+				//FMatrix parentGlobal;
+				//if (bone->GetParentIndex() < 0)
+				//	parentGlobal = FMatrix::Identity;
+				//else
+				//	parentGlobal = InBones[bone->GetParentIndex()]->GetTransform();
 
-				animation = bone->GetTransform() * FMatrix::Invert(parentGlobal);
+				//animation = bone->GetTransform() * FMatrix::Invert(parentGlobal);
+				animation = bone->GetLocalBindTransform();
 			}
 			// 현재 본의 애니메이션 변환을 부모 본의 트랜스폼과 결합
 			//bones[b] 현재 프레임의 글로벌 

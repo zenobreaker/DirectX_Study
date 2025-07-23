@@ -48,13 +48,26 @@ void CAnimRender::Tick()
 		}
 	}//for(i)	
 
+<<<<<<< Updated upstream
+=======
+	if (ComputeBuffer != nullptr)
+	{
+		AttachedBoneBuffer->Render();
+
+		sComputeInputSRV->SetResource(*ComputeBuffer);
+		sComputeOutpuUAV->SetUnorderedAccessView(*ComputeBuffer);
+	}
+
+>>>>>>> Stashed changes
 	Super::Tick();
 }
 
 void CAnimRender::Render()
 {
 	CBuffer->Render();
-	sClipSRV->SetResource(ClipSRV);
+
+	if (ClipSRV != nullptr)
+		sClipSRV->SetResource(ClipSRV);
 
 	Super::Render();
 }
@@ -129,7 +142,6 @@ void CAnimRender::ReadAnimationData(wstring InName)
 	reader->Close();
 	Delete(reader);
 
-
 	animation->CalcClipTransform(Bones);
 
 	Animations.push_back(animation);
@@ -140,7 +152,20 @@ void CAnimRender::Finish_ReadDatas()
 	for (const wstring& name : AnimationFiles)
 		ReadAnimationData(name);
 
+	if (Animations.empty())
+	{
+		ClipTexture = nullptr;
+		ClipSRV = nullptr;
+		//CBuffer->Clear(); // 빈 상태의 CBuffer도 필요 시 초기화
+		return;
+	}
+
 	CreateClipTransforms();
+<<<<<<< Updated upstream
+=======
+
+	CreateComputeData();
+>>>>>>> Stashed changes
 
 	for (UINT i = 0; i < MAX_INSTANCE_COUNT; i++)
 		ChangeClip(i, -1);
@@ -202,8 +227,11 @@ void CAnimRender::CreateClipTransforms()
 
 		//Clear
 		{
+<<<<<<< Updated upstream
 			for (CModelAnimation* animation : Animations)
 				animation->DeleteClipTransform();
+=======
+>>>>>>> Stashed changes
 
 			VirtualFree(p, 0, MEM_RELEASE);
 		}

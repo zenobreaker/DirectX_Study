@@ -12,8 +12,17 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework", "Framework\Fram
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Shaders", "_Shaders", "{6839426D-4C67-4C37-BBDA-48D96610CCB4}"
 	ProjectSection(SolutionItems) = preProject
+<<<<<<< Updated upstream
+=======
+		..\_Shaders\00_Billboard.fx = ..\_Shaders\00_Billboard.fx
+		..\_Shaders\00_Context.fx = ..\_Shaders\00_Context.fx
+		..\_Shaders\00_Definitions.fx = ..\_Shaders\00_Definitions.fx
+		..\_Shaders\00_Lighting.fx = ..\_Shaders\00_Lighting.fx
+		..\_Shaders\00_Material.fx = ..\_Shaders\00_Material.fx
+>>>>>>> Stashed changes
 		..\_Shaders\00_Model.fx = ..\_Shaders\00_Model.fx
 		..\_Shaders\00_Terrain.fx = ..\_Shaders\00_Terrain.fx
+<<<<<<< Updated upstream
 		..\_Shaders\04_Line.fx = ..\_Shaders\04_Line.fx
 		..\_Shaders\04_Line2.fx = ..\_Shaders\04_Line2.fx
 		..\_Shaders\04_Line_Circle.fx = ..\_Shaders\04_Line_Circle.fx
@@ -28,6 +37,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Shaders", "_Shaders", "{68
 		..\_Shaders\Texture_Layering.fx = ..\_Shaders\Texture_Layering.fx
 		..\_Shaders\Triangle.fx = ..\_Shaders\Triangle.fx
 		..\_Shaders\World.fx = ..\_Shaders\World.fx
+=======
+		..\_Shaders\00_Weather.fx = ..\_Shaders\00_Weather.fx
+		..\_Shaders\Animation.fx = ..\_Shaders\Animation.fx
+		..\_Shaders\Model_Lighting.fx = ..\_Shaders\Model_Lighting.fx
+>>>>>>> Stashed changes
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModelEditor", "ModelEditor\ModelEditor.vcxproj", "{8A3265D4-7D77-4B4F-940B-70481A5E3DAD}"

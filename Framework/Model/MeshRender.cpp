@@ -180,6 +180,8 @@ void CMeshRender::ReadMesh(wstring InName)
 		mesh->CreateBuffer(Shader);
 		mesh->Material = MaterialTable[mesh->MaterialName];
 	}
+
+	CalculateLocalBindTransforms();
 }
 
 void CMeshRender::ReadBoneData(CBinaryReader* InReader)
@@ -220,6 +222,20 @@ void CMeshRender::ReadMeshData(CBinaryReader* InReader)
 		InReader->FromByte((void**)&mesh->Indices, sizeof(UINT) * mesh->IndexCount);
 
 		Meshes.push_back(mesh);
+	}
+}
+
+void CMeshRender::CalculateLocalBindTransforms()
+{
+	for (CModelBone* bone : Bones)
+	{
+		if (bone->GetParentIndex() < 0)
+			bone->LocalBindTransform = bone->GetTransform();
+		else
+		{
+			CModelBone* parent = Bones[bone->GetParentIndex()];
+			bone->LocalBindTransform = bone->Transform * FMatrix::Invert(parent->Transform);
+		}
 	}
 }
 

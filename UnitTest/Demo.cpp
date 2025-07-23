@@ -13,6 +13,7 @@ void CDemo::Initialize()
 	CreateTerrain(); 
 	
 	CreateFloor();
+<<<<<<< Updated upstream
 	CreateCube();
 	//CreateSphere();
 	//CreateAirplane();
@@ -20,11 +21,29 @@ void CDemo::Initialize()
 	//CreateKachujin();
 	CreateKachujin_Old();
 	CreateTurtle();
+=======
+	//CreateBillboard();
+	CreateSky();
+	CreateCubeMap();
+	//CreateSphere();
+
+	//CreateKachujin();
+	//CreateKachujin_Old();
+	CreateTurtle_Anim();
+>>>>>>> Stashed changes
 }
 
 void CDemo::Destroy()
 {
+<<<<<<< Updated upstream
 	Delete(Terrain); 
+=======
+	Delete(Terrain);
+	Delete(Snow);
+	Delete(Rain);
+	Delete(Sky);
+	Delete(CubeMap);
+>>>>>>> Stashed changes
 
 	for(auto& render : Renders)
 		Delete(render); 
@@ -58,6 +77,7 @@ void CDemo::Tick()
 	//}
 	//ImGui::SliderInt("ClipNumber", (int*)&clipNumber, 0, maxClip-1);
 
+<<<<<<< Updated upstream
 	//if (ImGui::Button("Change"))
 	//{
 	//	if (ar != nullptr)
@@ -66,10 +86,39 @@ void CDemo::Tick()
 
 
 	for(auto render : Renders)
+=======
+	for (auto render : Renders)
+	{
+		render->SetPass(pass);
+>>>>>>> Stashed changes
 		render->Tick();
+	}
 
 	if (BoneDebugger != nullptr)
 		BoneDebugger->Tick();
+<<<<<<< Updated upstream
+=======
+	
+	UINT weatherSelected = (UINT)WeatherType;
+
+	Sky->Tick();
+
+	ImGui::Separator();
+	ImGui::SeparatorText("Weather");
+	ImGui::InputInt("Weather Type", (int*)&weatherSelected);
+	weatherSelected %= (UINT)EWeatherType::Max;
+	WeatherType = (EWeatherType)weatherSelected;
+
+	//switch (WeatherType)
+	//{
+	//	case EWeatherType::Rain: Rain->Tick(); break;
+	//	case EWeatherType::Snow: Snow->Tick(); break;
+	//}
+
+
+
+	CubeMap->Tick(); 
+>>>>>>> Stashed changes
 }
 
 void CDemo::PreRender()
@@ -89,6 +138,16 @@ void CDemo::Render()
 
 	if(BoneDebugger != nullptr)
 		BoneDebugger->Render();
+<<<<<<< Updated upstream
+=======
+	CubeMap->Render();
+
+	//switch (WeatherType)
+	//{
+	//	case EWeatherType::Rain: Rain->Render(); break;
+	//	case EWeatherType::Snow: Snow->Render(); break;
+	//}
+>>>>>>> Stashed changes
 }
 
 void CDemo::PostRender()
@@ -105,9 +164,54 @@ void CDemo::CreateTerrain()
 	Terrain->SetSlopeMap(L"Terrain/Rock.png", L"Terrain/Rock_Normal.png");
 }
 
+<<<<<<< Updated upstream
+=======
+void CDemo::CreateSky()
+{
+	Sky = new CSky(L"Environments/Sky1024.dds", L"99_Environment.fx", 100.0f);
+	//Rain = new CRain(FVector(300, 100, 500), 1e+4f);
+	//Snow = new CSnow(FVector(300, 100, 500), 1e+4f);
+}
+
+void CDemo::CreateCubeMap()
+{
+	CubeMap = new CCubeMap(L"63/Floor_Cube", L"Cube", L"Environments/Sky1024.dds");
+	CTransform* t = CubeMap->GetTransform();
+	t->SetPosition(FVector(Position.X, 1.0f, Position.Z));
+	t->SetScale(FVector(2.0f));
+	t->UpdateWorld();
+}
+
+void CDemo::CreateBillboard()
+{
+	Billboard = new CBillboard(L"Grass.fx");
+	Billboard->AddTexture(L"Terrain/Billboard.png");
+	Billboard->AddTexture(L"Terrain/Billboard2.png");
+	Billboard->AddTexture(L"Terrain/Billboard3.png");
+
+	for (UINT z = 0; z < 30; z += 3)
+	{
+		for (UINT x = 0; x < 30; x += 3)
+		{
+
+			FVector position = Position;
+			position.X = Position.X + ((float)x + FMath::Random(0.0f, 2.5f));
+			position.Y = 0.0f;
+			position.Z = Position.Z + ((float)z + FMath::Random(0.0f, 2.5f));
+
+			float randomX = FMath::Random(1.0f, 2.0f);
+			float randomY = FMath::Random(3.0f, 6.0f);
+
+			int random = FMath::Random(0, 2);
+			Billboard->AddPosition(position, FVector2D(randomX, randomY), random);
+		}
+	}
+}
+
+>>>>>>> Stashed changes
 void CDemo::CreateCube()
 {
-	Shader = CShaders::Get()->GetShader(L"Cube.fx");
+	Shader = CShaders::Get()->GetShader(L"Model_Lighting.fx");
 	CMeshRender* render = new CMeshRender(Shader);
 	render->ReadMaterial(MaterialFolder + L"Cube");
 	render->AddMaterial(L"Box");
@@ -129,14 +233,19 @@ void CDemo::CreateCube()
 
 void CDemo::CreateFloor()
 {
-	Shader = CShaders::Get()->GetShader(L"Cube.fx");
+	Shader = CShaders::Get()->GetShader(L"Model_Lighting.fx");
 	CMeshRender* render = new CMeshRender(Shader);
 	render->ReadMaterial(MaterialFolder + L"Plane"); 
 	render->ReadMesh(L"Plane");
 
 	CTransform* t = render->AddTransform();
+<<<<<<< Updated upstream
 	t->SetPosition(FVector(Position.X, -5.5f, Position.Z));
 	t->SetScale(FVector(150, 15, 30));
+=======
+	t->SetPosition(FVector(Position.X, 0.0f, Position.Z));
+	t->SetScale(FVector(50, 15, 50));
+>>>>>>> Stashed changes
 	t->UpdateWorld();
 
 	CMaterial* material = render->GetMaterial("WorldGridMaterial");
@@ -146,7 +255,7 @@ void CDemo::CreateFloor()
 
 void CDemo::CreateAirplane()
 {
-	Shader = CShaders::Get()->GetShader(L"Cube.fx");
+	Shader = CShaders::Get()->GetShader(L"Model_Lighting.fx");
 	CMeshRender* render = new CMeshRender(Shader);
 	render->ReadMaterial(MaterialFolder + L"Airplane");
 	render->ReadMesh(L"Airplane");
@@ -164,14 +273,14 @@ void CDemo::CreateAirplane()
 
 void CDemo::CreateSphere()
 {
-	Shader = CShaders::Get()->GetShader(L"Cube.fx");
+	Shader = CShaders::Get()->GetShader(L"Model_Lighting.fx");
 	CMeshRender* render = new CMeshRender(Shader);
-	render->ReadMaterial(MaterialFolder + L"Sphere");
+	render->ReadMaterial(MaterialFolder + L"63/Sphere");
 	render->ReadMesh(L"Sphere");
 
 	CTransform* t = render->AddTransform();
-	t->SetPosition(FVector(100.5f, 11.5f, 64.0f));
-	t->SetScale(100.0f);
+	t->SetPosition(FVector(Position.X - 1.0f, 1.0f, Position.Z));
+	t->SetScale(5.0f);
 	t->UpdateWorld();
 
 	Renders.push_back(render);
@@ -223,19 +332,26 @@ void CDemo::CreateKachujin_Old()
 	//DrawModelBone(render);
 }
 
-void CDemo::CreateTurtle()
+void CDemo::CreatTurtle()
+{
+	Shader = CShaders::Get()->GetShader(L"Model.fx");
+	
+}
+
+void CDemo::CreateTurtle_Anim()
 {
 	Shader = CShaders::Get()->GetShader(L"Animation.fx");
 	CAnimRender* render = new CAnimRender(Shader);
 	render->ReadMaterial(MaterialFolder + L"Turtle");
 	render->ReadMesh(L"Turtle/Turtle");
 	render->ReadAnimation(L"Turtle/Idle");
-	render->ReadAnimation(L"Turtle/GuardPose");
-	render->ReadAnimation(L"Turtle/Hit");
-	render->ReadAnimation(L"Turtle/Attack_Scratch");
+	//render->ReadAnimation(L"Turtle/GuardPose");
+	//render->ReadAnimation(L"Turtle/Hit");
+	//render->ReadAnimation(L"Turtle/Attack_Scratch");
 	render->Finish_ReadDatas();
 
 	int index = 0;
+<<<<<<< Updated upstream
 	for (float x = -7.0f; x <= 7.0; x += 0.1f)
 	{
 		CTransform* t = render->AddTransform();
@@ -244,8 +360,16 @@ void CDemo::CreateTurtle()
 		t->UpdateWorld();
 		int clip = FMath::Random(0, 3);
 		render->ChangeClip(index++, clip);
+=======
+	
+	CTransform* t = render->AddTransform();
+	t->SetPosition(FVector(Position.X + 2.0f, 0, Position.Z));
+	t->SetScale(1.0f);
+	t->UpdateWorld();
+	/*int clip = FMath::Random(0, 3);
+	render->ChangeClip(index++, clip);*/
+>>>>>>> Stashed changes
 
-	}
 	Renders.push_back(render);
 }
 
