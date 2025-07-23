@@ -59,7 +59,7 @@ void CAnimRender::Tick()
 
 	if (ComputeBuffer != nullptr)
 	{
-		AttachedBoneBuffer->Render(); 
+		AttachedBoneBuffer->Render();
 
 		sComputeInputSRV->SetResource(*ComputeBuffer);
 		sComputeOutpuUAV->SetUnorderedAccessView(*ComputeBuffer);
@@ -71,7 +71,9 @@ void CAnimRender::Tick()
 void CAnimRender::Render()
 {
 	CBuffer->Render();
-	sClipSRV->SetResource(ClipSRV);
+
+	if (ClipSRV != nullptr)
+		sClipSRV->SetResource(ClipSRV);
 
 	Super::Render();
 }
@@ -146,7 +148,6 @@ void CAnimRender::ReadAnimationData(wstring InName)
 	reader->Close();
 	Delete(reader);
 
-
 	animation->CalcClipTransform(Bones);
 
 	Animations.push_back(animation);
@@ -157,8 +158,16 @@ void CAnimRender::Finish_ReadDatas()
 	for (const wstring& name : AnimationFiles)
 		ReadAnimationData(name);
 
+	if (Animations.empty())
+	{
+		ClipTexture = nullptr;
+		ClipSRV = nullptr;
+		//CBuffer->Clear(); // 빈 상태의 CBuffer도 필요 시 초기화
+		return;
+	}
+
 	CreateClipTransforms();
-	
+
 	CreateComputeData();
 
 	for (UINT i = 0; i < MAX_INSTANCE_COUNT; i++)
@@ -221,7 +230,6 @@ void CAnimRender::CreateClipTransforms()
 
 		//Clear
 		{
-	
 			VirtualFree(p, 0, MEM_RELEASE);
 		}
 

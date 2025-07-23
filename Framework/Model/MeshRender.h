@@ -44,6 +44,8 @@ private:
 	void ReadBoneData(CBinaryReader* InReader);
 	void ReadMeshData(CBinaryReader* InReader);
 
+	void CalculateLocalBindTransforms();
+
 public:
 	void AddMaterial(wstring InFilePath);
 	virtual FMatrix UpdateBoneTransformWithIndex(UINT InIndex);

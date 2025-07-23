@@ -25,7 +25,8 @@ private:
 	void CreateSphere(); 
 	void CreateKachujin(); 
 	void CreateKachujin_Old(); 
-	void CreateTurtle();
+	void CreatTurtle();
+	void CreateTurtle_Anim();
 
 	void CreateSky();
 	void CreateCubeMap();

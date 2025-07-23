@@ -16,6 +16,7 @@ public:
 
 	const FMatrix& GetTransform() { return Transform; }
 	const FMatrix& GetOffsetTransform() { return OffsetTransform; }
+	const FMatrix& GetLocalBindTransform() { return LocalBindTransform; }
 
 private:
 	UINT Index = 0;
@@ -26,5 +27,6 @@ private:
 
 	FMatrix Transform;
 	FMatrix OffsetTransform;
+	FMatrix LocalBindTransform;
 	vector<CModelBone*> Children;
 };

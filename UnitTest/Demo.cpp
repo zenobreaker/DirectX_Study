@@ -11,18 +11,23 @@ void CDemo::Initialize()
 	ShaderFile = L"TerrainNormal.fx";
 
 	CreateFloor();
+
 	//CreateBillboard();
 	CreateSky();
 	CreateCubeMap();
+	//CreateSphere();
 
 	//CreateKachujin();
 	//CreateKachujin_Old();
-	//CreateTurtle();
+	CreateTurtle_Anim();
+
 }
 
 void CDemo::Destroy()
 {
+
 	Delete(Terrain);
+	Delete(Snow);
 	Delete(Rain);
 	Delete(Sky);
 	Delete(CubeMap);
@@ -45,10 +50,15 @@ void CDemo::Tick()
 
 
 	for (auto render : Renders)
+	{
+		render->SetPass(pass);
+
 		render->Tick();
+	}
 
 	if (BoneDebugger != nullptr)
 		BoneDebugger->Tick();
+
 	
 	UINT weatherSelected = (UINT)WeatherType;
 
@@ -60,13 +70,11 @@ void CDemo::Tick()
 	weatherSelected %= (UINT)EWeatherType::Max;
 	WeatherType = (EWeatherType)weatherSelected;
 
-	switch (WeatherType)
-	{
-		case EWeatherType::Rain: Rain->Tick(); break;
-		case EWeatherType::Snow: Snow->Tick(); break;
-	}
-
-
+	//switch (WeatherType)
+	//{
+	//	case EWeatherType::Rain: Rain->Tick(); break;
+	//	case EWeatherType::Snow: Snow->Tick(); break;
+	//}
 
 	CubeMap->Tick(); 
 }
@@ -90,13 +98,14 @@ void CDemo::Render()
 
 	if (BoneDebugger != nullptr)
 		BoneDebugger->Render();
+
 	CubeMap->Render();
 
-	switch (WeatherType)
-	{
-		case EWeatherType::Rain: Rain->Render(); break;
-		case EWeatherType::Snow: Snow->Render(); break;
-	}
+	//switch (WeatherType)
+	//{
+	//	case EWeatherType::Rain: Rain->Render(); break;
+	//	case EWeatherType::Snow: Snow->Render(); break;
+	//}
 }
 
 void CDemo::PostRender()
@@ -116,8 +125,8 @@ void CDemo::CreateTerrain()
 void CDemo::CreateSky()
 {
 	Sky = new CSky(L"Environments/Sky1024.dds", L"99_Environment.fx", 100.0f);
-	Rain = new CRain(FVector(300, 100, 500), 1e+4f);
-	Snow = new CSnow(FVector(300, 100, 500), 1e+4f);
+	//Rain = new CRain(FVector(300, 100, 500), 1e+4f);
+	//Snow = new CSnow(FVector(300, 100, 500), 1e+4f);
 }
 
 void CDemo::CreateCubeMap()
@@ -157,7 +166,7 @@ void CDemo::CreateBillboard()
 
 void CDemo::CreateCube()
 {
-	Shader = CShaders::Get()->GetShader(L"Cube.fx");
+	Shader = CShaders::Get()->GetShader(L"Model_Lighting.fx");
 	CMeshRender* render = new CMeshRender(Shader);
 	render->ReadMaterial(MaterialFolder + L"Cube");
 	render->AddMaterial(L"Box");
@@ -179,14 +188,14 @@ void CDemo::CreateCube()
 
 void CDemo::CreateFloor()
 {
-	Shader = CShaders::Get()->GetShader(L"Cube.fx");
+	Shader = CShaders::Get()->GetShader(L"Model_Lighting.fx");
 	CMeshRender* render = new CMeshRender(Shader);
 	render->ReadMaterial(MaterialFolder + L"Plane");
 	render->ReadMesh(L"Plane");
 
 	CTransform* t = render->AddTransform();
 	t->SetPosition(FVector(Position.X, 0.0f, Position.Z));
-	t->SetScale(FVector(30, 15, 30));
+	t->SetScale(FVector(50, 15, 50));
 	t->UpdateWorld();
 
 	CMaterial* material = render->GetMaterial("WorldGridMaterial");
@@ -196,7 +205,7 @@ void CDemo::CreateFloor()
 
 void CDemo::CreateAirplane()
 {
-	Shader = CShaders::Get()->GetShader(L"Cube.fx");
+	Shader = CShaders::Get()->GetShader(L"Model_Lighting.fx");
 	CMeshRender* render = new CMeshRender(Shader);
 	render->ReadMaterial(MaterialFolder + L"Airplane");
 	render->ReadMesh(L"Airplane");
@@ -214,14 +223,14 @@ void CDemo::CreateAirplane()
 
 void CDemo::CreateSphere()
 {
-	Shader = CShaders::Get()->GetShader(L"Cube.fx");
+	Shader = CShaders::Get()->GetShader(L"Model_Lighting.fx");
 	CMeshRender* render = new CMeshRender(Shader);
-	render->ReadMaterial(MaterialFolder + L"Sphere");
+	render->ReadMaterial(MaterialFolder + L"63/Sphere");
 	render->ReadMesh(L"Sphere");
 
 	CTransform* t = render->AddTransform();
-	t->SetPosition(FVector(100.5f, 11.5f, 64.0f));
-	t->SetScale(100.0f);
+	t->SetPosition(FVector(Position.X - 1.0f, 1.0f, Position.Z));
+	t->SetScale(5.0f);
 	t->UpdateWorld();
 
 	Renders.push_back(render);
@@ -273,29 +282,32 @@ void CDemo::CreateKachujin_Old()
 	//DrawModelBone(render);
 }
 
-void CDemo::CreateTurtle()
+void CDemo::CreatTurtle()
+{
+	Shader = CShaders::Get()->GetShader(L"Model.fx");
+	
+}
+
+void CDemo::CreateTurtle_Anim()
 {
 	Shader = CShaders::Get()->GetShader(L"Animation.fx");
 	CAnimRender* render = new CAnimRender(Shader);
 	render->ReadMaterial(MaterialFolder + L"Turtle");
 	render->ReadMesh(L"Turtle/Turtle");
 	render->ReadAnimation(L"Turtle/Idle");
-	render->ReadAnimation(L"Turtle/GuardPose");
-	render->ReadAnimation(L"Turtle/Hit");
-	render->ReadAnimation(L"Turtle/Attack_Scratch");
+	//render->ReadAnimation(L"Turtle/GuardPose");
+	//render->ReadAnimation(L"Turtle/Hit");
+	//render->ReadAnimation(L"Turtle/Attack_Scratch");
 	render->Finish_ReadDatas();
 
 	int index = 0;
-	for (float x = -7.0f; x <= 7.0; x += 0.1f)
-	{
-		CTransform* t = render->AddTransform();
-		t->SetPosition(FVector(Position.X + x, -5.5f, Position.Z));
-		t->SetScale(0.5f);
-		t->UpdateWorld();
-		int clip = FMath::Random(0, 3);
-		render->ChangeClip(index++, clip);
+	CTransform* t = render->AddTransform();
+	t->SetPosition(FVector(Position.X + 2.0f, 0, Position.Z));
+	t->SetScale(1.0f);
+	t->UpdateWorld();
+	/*int clip = FMath::Random(0, 3);
+	render->ChangeClip(index++, clip);*/
 
-	}
 	Renders.push_back(render);
 }
 
