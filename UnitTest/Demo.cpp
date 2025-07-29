@@ -10,6 +10,7 @@ void CDemo::Initialize()
 	MaterialFolder = L"";
 	ShaderFile = L"TerrainNormal.fx";
 
+	CreateLighting();
 	CreateFloor();
 
 	//CreateBillboard();
@@ -21,10 +22,21 @@ void CDemo::Initialize()
 	//CreateKachujin_Old();
 	CreateTurtle_Anim();
 
+	UINT width = (UINT)CD3D::GetDesc().Width;
+	UINT height = (UINT)CD3D::GetDesc().Height;
+
+	PostEffect = new CPostEffect();
+
+	Render2D = new CRender2D(*PostEffect->GetRenderTarget());
+	Render2D->GetTransform()->SetScale(FVector(400, 225, 1));
+	Render2D->GetTransform()->SetPosition(FVector(250, 160, 0));
 }
 
 void CDemo::Destroy()
 {
+	Delete(PostEffect);
+	Delete(Render2D);
+
 	Delete(Terrain);
 	Delete(Sky);
 
@@ -43,9 +55,7 @@ void CDemo::Tick()
 	ImGui::SeparatorText("Model");
 	static int prev = 0;
 	ImGui::SliderInt("Model", (int*)&ModelIndex, 0, Renders.size() - 1);
-
-
-
+	
 	for (auto render : Renders)
 	{
 		render->SetPass(pass);
@@ -63,19 +73,18 @@ void CDemo::Tick()
 	//	case EWeatherType::Snow: Snow->Tick(); break;
 	//}
 
+	PostEffect->Tick();
+	Render2D->Tick();
 }
 
 void CDemo::PreRender()
 {
+	PostEffect->PreRender();
 
-}
-
-void CDemo::Render()
-{
 	ImGui::SliderInt("Pass ", (int*)&Pass, 1, 0);
 
 	Sky->Render();
-	
+
 	//Terrain->SetPass(Pass);
 	//Terrain->Render();
 
@@ -93,9 +102,14 @@ void CDemo::Render()
 	//}
 }
 
+void CDemo::Render()
+{
+	PostEffect->Render();
+}
+
 void CDemo::PostRender()
 {
-
+	Render2D->Render();
 }
 
 void CDemo::CreateTerrain()
@@ -112,6 +126,102 @@ void CDemo::CreateSky()
 	Sky = new CSky(L"Environments/Sky1024.dds", L"99_Environment.fx", 100.0f);
 	//Rain = new CRain(FVector(300, 100, 500), 1e+4f);
 	//Snow = new CSnow(FVector(300, 100, 500), 1e+4f);
+}
+
+void CDemo::CreateLighting()
+{
+	FPointLight pointLight;
+
+	FVector position;
+
+	{
+		pointLight = FPointLight();
+		pointLight.Diffuse = FColor(0.0f, 1.0f, 0.0f, 1.0f);
+		pointLight.Specular = FColor(0.0f, 0.7f, 0.0f, 1.0f);
+		pointLight.Emissive = FColor(0.0f, 0.7f, 0.0f, 1.0f);
+		pointLight.Position = FVector(Position.X, 8.9f, Position.Z);
+		position = FVector(Position.X, 8.9f, Position.Z);;
+		pointLight.Range = 9.0f;
+		pointLight.Intensity = 0.5;
+
+		CLighting::Get()->AddPointLight(pointLight);
+	}
+
+	{
+		pointLight = FPointLight();
+		pointLight.Diffuse = FColor(0.0f, 0.0f, 1.0f, 1.0f);
+		pointLight.Specular = FColor(0.0f, 0.0f, 0.7f, 1.0f);
+		pointLight.Emissive = FColor(0.0f, 0.0f, 0.7f, 1.0f);
+		pointLight.Position = FVector(+1.0f, 0, 0.0f);
+
+		pointLight.Range = 9.0f;
+		pointLight.Intensity = 0.5;
+		pointLight.Position += position;
+		CLighting::Get()->AddPointLight(pointLight);
+	}
+
+	{
+		pointLight = FPointLight();
+		pointLight.Diffuse = FColor(1.0f, 0.0f, 0.0f, 1.0f);
+		pointLight.Specular = FColor(0.7f, 0.0f, 0.0f, 1.0f);
+		pointLight.Emissive = FColor(0.7f, 0.0f, 0.0f, 1.0f);
+		pointLight.Position = FVector(+2.0f, 0, 0.0f);
+
+		pointLight.Range = 9.0f;
+		pointLight.Intensity = 0.5;
+		pointLight.Position += position;
+		CLighting::Get()->AddPointLight(pointLight);
+	}
+
+	FSpotLight spotLight;
+
+	//1 - Spot Light
+	{
+		spotLight = FSpotLight();
+		spotLight.Diffuse = FColor(0.7f, 1.0f, 0.0f, 1.0f);
+		spotLight.Specular = FColor(0.3f, 1.0f, 0.0f, 1.0f);
+		spotLight.Emissive = FColor(0.3f, 1.0f, 0.0f, 1.0f);
+		spotLight.Position = FVector(-5.0f, 5.0f, +3.0f);
+		spotLight.Range = 30.0f;
+		spotLight.Intensity = 0.55f;
+		spotLight.Direction = FVector(0, -1, 0);
+		spotLight.Angle = 40.0f;
+
+		spotLight.Position += Position;
+		CLighting::Get()->AddSpotLight(spotLight);
+	}
+
+	//2 - Spot Light
+	{
+		spotLight = FSpotLight();
+		spotLight.Diffuse = FColor(1.0f, 0.2f, 0.9f, 1.0f);
+		spotLight.Specular = FColor(1.0f, 0.2f, 0.9f, 1.0f);
+		spotLight.Emissive = FColor(1.0f, 0.2f, 0.9f, 1.0f);
+		spotLight.Position = FVector(-2.5f, 5.0f, +3.0f);
+		spotLight.Range = 30.0f;
+		spotLight.Intensity = 0.55f;
+		spotLight.Direction = FVector(0, -1, 0);
+		spotLight.Angle = 40.0f;
+
+		spotLight.Position += Position;
+		CLighting::Get()->AddSpotLight(spotLight);
+	}
+
+	//3 - Spot Light
+	{
+		spotLight = FSpotLight();
+		spotLight.Diffuse = FColor(0.0f, 0.2f, 0.9f, 1.0f);
+		spotLight.Specular = FColor(0.0f, 0.2f, 0.9f, 1.0f);
+		spotLight.Emissive = FColor(0.0f, 0.2f, 0.9f, 1.0f);
+		spotLight.Position = FVector(0.0f, 5.0f, +3.0f);
+		spotLight.Range = 35.0f;
+		spotLight.Intensity = 0.3f;
+		spotLight.Direction = FVector(0, -1, 0);
+		spotLight.Angle = 20.0f;
+		spotLight.Position += Position;
+		CLighting::Get()->AddSpotLight(spotLight);
+	}
+
 }
 
 
@@ -172,7 +282,7 @@ void CDemo::CreateFloor()
 
 	CTransform* t = render->AddTransform();
 	t->SetPosition(FVector(Position.X, 0.0f, Position.Z));
-	t->SetScale(FVector(50, 15, 50));
+	t->SetScale(FVector(100, 15, 100));
 	t->UpdateWorld();
 
 	CMaterial* material = render->GetMaterial("WorldGridMaterial");

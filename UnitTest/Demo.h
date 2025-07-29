@@ -16,6 +16,8 @@ public:
 
 
 private:
+	void CreateLighting();
+
 	void CreateTerrain();
 	
 
@@ -37,12 +39,18 @@ private:
 	wstring MaterialFolder;
 
 private:
+	CRender2D* Render2D;
+	CPostEffect* PostEffect;
+
+private:
 	CShader* Shader;
+
 
 	UINT Pass = 0; 
 	UINT ModelIndex = 0;
 
 	FVector Position = FVector(120.0f, 2.0f, 90.0f);
+
 
 	CSky* Sky;
 	CCubeMap* CubeMap;
