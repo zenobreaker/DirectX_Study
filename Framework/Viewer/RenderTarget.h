@@ -18,6 +18,22 @@ public:
 	void ClearRenderTarget();
 
 public:
+	ID3D11RenderTargetView* GetRTVPointer() const
+	{
+		return RTV;
+	}
+
+	ID3D11Texture2D* GetTexturePointer() const
+	{
+		return Texture;
+	}
+
+	ID3D11ShaderResourceView* GetSRVPointer() const
+	{
+		return SRV;
+	}
+
+public:
 	static void SetRenderTargets(CRenderTarget** InTargets, UINT InCount, class CDepthStencil* InDepthStencil);
 
 

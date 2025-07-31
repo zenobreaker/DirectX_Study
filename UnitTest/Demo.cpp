@@ -1,11 +1,89 @@
 #include "Pch.h"
 #include "Demo.h"
 
+CDemo_MRT::CDemo_MRT(ID3D11ShaderResourceView* InSRV)
+	: CRenderer(L"MRT.fxo")
+{
+	FVertex vertices[4];
+	vertices[0].Position = FVector(-1.0f, -1.0f, 0.0f);
+	vertices[1].Position = FVector(-1.0f, +1.0f, 0.0f);
+	vertices[2].Position = FVector(+1.0f, -1.0f, 0.0f);
+	vertices[3].Position = FVector(+1.0f, +1.0f, 0.0f);
+
+	VBuffer = new CVertexBuffer(vertices, 4, sizeof(FVertex));
+
+	Shader->AsSRV("MRTMap")->SetResource(InSRV);
+}
+
+CDemo_MRT::~CDemo_MRT()
+{
+}
+
+void CDemo_MRT::Tick()
+{
+	Super::Tick();
+}
+
+void CDemo_MRT::Render()
+{
+	Super::Render();
+
+	IA_TRIANGLESTRIP();
+	Shader->Draw(4);
+}
+
+
 void CDemo::Initialize()
 {
 	CContext::Get()->GetCamera()->SetRotation(FVector(30.0f, 0.0f, 0.0f));
 	CContext::Get()->GetCamera()->SetPosition(FVector(119.0f, 4.31f, 81.43f));
 	CContext::Get()->GetCamera()->SetMoveSpeed(10.0f);
+
+
+	UINT width = (UINT)CD3D::GetDesc().Width;
+	UINT height = (UINT)CD3D::GetDesc().Height;
+
+	PostEffect = new CPostEffect();
+
+	/*Render2D = new CRender2D(*PostEffect->GetRenderTarget());
+	Render2D->GetTransform()->SetScale(FVector(400, 225, 1));
+	Render2D->GetTransform()->SetPosition(FVector(250, 160, 0));*/
+
+
+	DepthStencil = new CDepthStencil(width, height);
+	Viewport = new CViewport(width, height);
+
+	Demo_MRT = new CDemo_MRT(*PostEffect->GetRenderTarget());
+
+	MRT[0] = new CRenderTarget(width, height);
+	MRT[1] = new CRenderTarget(width, height);
+	MRT[2] = new CRenderTarget(width, height);
+	MRT[3] = new CRenderTarget(width, height);
+
+
+	Render2D_MRT[0] = new CRender2D(*MRT[0]);
+	Render2D_MRT[0]->GetTransform()->SetScale(FVector(300, 250, 1));
+	Render2D_MRT[0]->GetTransform()->SetPosition(FVector(200, 700, 0));
+
+	Render2D_MRT[1] = new CRender2D(*MRT[1]);
+	Render2D_MRT[1]->GetTransform()->SetScale(FVector(300, 250, 1));
+	Render2D_MRT[1]->GetTransform()->SetPosition(FVector(500, 700, 0));
+
+	Render2D_MRT[2] = new CRender2D(*MRT[2]);
+	Render2D_MRT[2]->GetTransform()->SetScale(FVector(300, 250, 1));
+	Render2D_MRT[2]->GetTransform()->SetPosition(FVector(800, 700, 0));
+
+	Render2D_MRT[3] = new CRender2D(*MRT[3]);
+	Render2D_MRT[3]->GetTransform()->SetScale(FVector(300, 250, 1));
+	Render2D_MRT[3]->GetTransform()->SetPosition(FVector(1100, 700, 0));
+
+
+
+	for (int i = 0; i < 4; i++)
+	{
+		printf("RTV : %p\n", MRT[i]->GetSRVPointer());
+		//printf("R2M : %p\n", Render2D_MRT[i]->GetSRVPointer());
+	}
 
 	MaterialFolder = L"";
 	ShaderFile = L"TerrainNormal.fx";
@@ -21,19 +99,20 @@ void CDemo::Initialize()
 	//CreateKachujin();
 	//CreateKachujin_Old();
 	CreateTurtle_Anim();
-
-	UINT width = (UINT)CD3D::GetDesc().Width;
-	UINT height = (UINT)CD3D::GetDesc().Height;
-
-	PostEffect = new CPostEffect();
-
-	Render2D = new CRender2D(*PostEffect->GetRenderTarget());
-	Render2D->GetTransform()->SetScale(FVector(400, 225, 1));
-	Render2D->GetTransform()->SetPosition(FVector(250, 160, 0));
 }
 
 void CDemo::Destroy()
 {
+	Delete(Demo_MRT);
+	Delete(Viewport);
+	Delete(DepthStencil);
+
+	for (int i = 0; i < 4; i++)
+	{
+		Delete(MRT[i]);
+		Delete(Render2D_MRT[i]);
+	}
+
 	Delete(PostEffect);
 	Delete(Render2D);
 
@@ -55,7 +134,7 @@ void CDemo::Tick()
 	ImGui::SeparatorText("Model");
 	static int prev = 0;
 	ImGui::SliderInt("Model", (int*)&ModelIndex, 0, Renders.size() - 1);
-	
+
 	for (auto render : Renders)
 	{
 		render->SetPass(pass);
@@ -74,7 +153,12 @@ void CDemo::Tick()
 	//}
 
 	PostEffect->Tick();
-	Render2D->Tick();
+	//	Render2D->Tick();
+
+	Demo_MRT->Tick();
+
+	for (int i = 0; i < 4; i++)
+		Render2D_MRT[i]->Tick();
 }
 
 void CDemo::PreRender()
@@ -100,16 +184,30 @@ void CDemo::PreRender()
 	//	case EWeatherType::Rain: Rain->Render(); break;
 	//	case EWeatherType::Snow: Snow->Render(); break;
 	//}
+
+	//MRT
+	{
+		CRenderTarget::SetRenderTargets(MRT, 4, DepthStencil);
+		for (int i = 0; i < 4; i++)
+			MRT[i]->ClearRenderTarget();
+
+		Viewport->RSSetViewport();
+
+		Demo_MRT->Render();
+	}
 }
 
 void CDemo::Render()
 {
-	PostEffect->Render();
 }
 
 void CDemo::PostRender()
 {
-	Render2D->Render();
+	PostEffect->Render();
+	//Render2D->Render();
+
+	for (int i = 0; i < 4; i++)
+		Render2D_MRT[i]->Render();
 }
 
 void CDemo::CreateTerrain()
@@ -232,21 +330,50 @@ void CDemo::CreateBillboard()
 	Billboard->AddTexture(L"Terrain/Billboard2.png");
 	Billboard->AddTexture(L"Terrain/Billboard3.png");
 
-	for (UINT z = 0; z < 30; z += 3)
+
+	for (UINT z = 0; z < Terrain->GetHeight(); z += 3)
 	{
-		for (UINT x = 0; x < 30; x += 3)
+		for (UINT x = 0; x < Terrain->GetWidth(); x += 3)
 		{
+			//모델 배치 영역
+			if (x >= 105 && x <= 125 && z >= 80 && z <= 95)
+				continue;
 
-			FVector position = Position;
-			position.X = Position.X + ((float)x + FMath::Random(0.0f, 2.5f));
-			position.Y = 0.0f;
-			position.Z = Position.Z + ((float)z + FMath::Random(0.0f, 2.5f));
 
-			float randomX = FMath::Random(1.0f, 2.0f);
-			float randomY = FMath::Random(3.0f, 6.0f);
+			UINT index = z * Terrain->GetWidth() + x;
 
-			int random = FMath::Random(0, 2);
-			Billboard->AddPosition(position, FVector2D(randomX, randomY), random);
+			float height = Terrain->GetY(x, z);
+			float probability = 0.0f; //배치 확률
+
+			const FVector4 weights = Terrain->GetWeights(x, z);
+
+			float low = Terrain->GetHeightLowRatio();
+			float high = Terrain->GetHeightHighRatio();
+
+			float minY = 0.1f;
+			float maxY = (high + low) * 0.75f;
+
+
+			if (height > minY && height < maxY)
+			{
+				if (weights.W < 0.6f)
+					probability = 1.0f; //경사면
+			}//if(height)
+
+			float r = FMath::Random(0.0f, 1.0f);
+			if (probability >= r)
+			{
+				FVector position = FVector::Zero;
+				position.X = ((float)x + FMath::Random(0.0f, 2.5f));
+				position.Y = height;
+				position.Z = ((float)z + FMath::Random(0.0f, 2.5f));
+
+				float randomX = FMath::Random(1.0f, 2.0f);
+				float randomY = FMath::Random(3.0f, 6.0f);
+
+				int random = FMath::Random(0, 2);
+				Billboard->AddPosition(position, FVector2D(randomX, randomY), random);
+			} //if(probability)	
 		}
 	}
 }
@@ -404,3 +531,4 @@ void CDemo::DrawModelBone(CMeshRender* InMesh)
 	CShader* shader = CShaders::Get()->GetShader(L"Sphere.fx");
 	BoneDebugger = new CSphereDebugDrawer(shader, InMesh);
 }
+

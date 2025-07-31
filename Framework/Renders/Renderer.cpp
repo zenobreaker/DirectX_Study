@@ -4,7 +4,20 @@
 CRenderer::CRenderer(wstring InFile)
 	: File(InFile)
 {
-	Shader = CShaders::Get()->GetShader(InFile);
+	Shader = new CShader(InFile);
+
+	Initialize();
+}
+
+CRenderer::CRenderer(CShader* shader)
+	: Shader(shader)
+{
+	Initialize();
+}
+
+void CRenderer::Initialize()
+{
+	assert(Shader != nullptr);
 
 	Frame = new CFrame(Shader);
 	Transform = new CTransform(Shader);
