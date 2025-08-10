@@ -9,6 +9,9 @@ public:
 	void Tick();
 	void Render();
 
+public:
+	void SetSRV(ID3D11ShaderResourceView* InSRV);
+
 private:
 	struct FDesc
 	{

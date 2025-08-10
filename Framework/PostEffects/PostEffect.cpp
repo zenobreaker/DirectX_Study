@@ -128,11 +128,16 @@ void CPostEffect::Tick()
 	Super::Tick();
 }
 
-void CPostEffect::PreRender()
+
+void CPostEffect::PreRender(ID3D11ShaderResourceView* InSRV)
 {
+	if(InSRV != nullptr)
+		Shader->AsSRV("PostEffectMap")->SetResource(InSRV);
+
 	RenderTarget->OMSetRenderTarget(DepthStencil);
 	RenderTarget->ClearRenderTarget();
 	DepthStencil->ClearDepthStencil();
+
 }
 
 void CPostEffect::Render()

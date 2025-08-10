@@ -43,52 +43,18 @@ void CDemo::Initialize()
 	UINT width = (UINT)CD3D::GetDesc().Width;
 	UINT height = (UINT)CD3D::GetDesc().Height;
 
-	PostEffect = new CPostEffect();
 
-	/*Render2D = new CRender2D(*PostEffect->GetRenderTarget());
-	Render2D->GetTransform()->SetScale(FVector(400, 225, 1));
-	Render2D->GetTransform()->SetPosition(FVector(250, 160, 0));*/
+	/*Blur = new CBlur(); 
+	PostEffect = new CPostEffect();*/
 
-
-	DepthStencil = new CDepthStencil(width, height);
-	Viewport = new CViewport(width, height);
-
-	Demo_MRT = new CDemo_MRT(*PostEffect->GetRenderTarget());
-
-	MRT[0] = new CRenderTarget(width, height);
-	MRT[1] = new CRenderTarget(width, height);
-	MRT[2] = new CRenderTarget(width, height);
-	MRT[3] = new CRenderTarget(width, height);
-
-
-	Render2D_MRT[0] = new CRender2D(*MRT[0]);
-	Render2D_MRT[0]->GetTransform()->SetScale(FVector(300, 250, 1));
-	Render2D_MRT[0]->GetTransform()->SetPosition(FVector(200, 700, 0));
-
-	Render2D_MRT[1] = new CRender2D(*MRT[1]);
-	Render2D_MRT[1]->GetTransform()->SetScale(FVector(300, 250, 1));
-	Render2D_MRT[1]->GetTransform()->SetPosition(FVector(500, 700, 0));
-
-	Render2D_MRT[2] = new CRender2D(*MRT[2]);
-	Render2D_MRT[2]->GetTransform()->SetScale(FVector(300, 250, 1));
-	Render2D_MRT[2]->GetTransform()->SetPosition(FVector(800, 700, 0));
-
-	Render2D_MRT[3] = new CRender2D(*MRT[3]);
-	Render2D_MRT[3]->GetTransform()->SetScale(FVector(300, 250, 1));
-	Render2D_MRT[3]->GetTransform()->SetPosition(FVector(1100, 700, 0));
-
-
-
-	for (int i = 0; i < 4; i++)
-	{
-		printf("RTV : %p\n", MRT[i]->GetSRVPointer());
-		//printf("R2M : %p\n", Render2D_MRT[i]->GetSRVPointer());
-	}
-
+	
 	MaterialFolder = L"";
 	ShaderFile = L"TerrainNormal.fx";
 
 	CreateLighting();
+	CreateProjector();
+	CreateBloom();
+
 	CreateFloor();
 
 	//CreateBillboard();
@@ -103,18 +69,12 @@ void CDemo::Initialize()
 
 void CDemo::Destroy()
 {
-	Delete(Demo_MRT);
-	Delete(Viewport);
-	Delete(DepthStencil);
-
-	for (int i = 0; i < 4; i++)
-	{
-		Delete(MRT[i]);
-		Delete(Render2D_MRT[i]);
-	}
-
-	Delete(PostEffect);
+	Delete(Bloom);
 	Delete(Render2D);
+	/*
+	Delete(Blur);
+	Delete(PostEffect);*/
+
 
 	Delete(Terrain);
 	Delete(Sky);
@@ -152,18 +112,17 @@ void CDemo::Tick()
 	//	case EWeatherType::Snow: Snow->Tick(); break;
 	//}
 
-	PostEffect->Tick();
-	//	Render2D->Tick();
-
-	Demo_MRT->Tick();
-
-	for (int i = 0; i < 4; i++)
-		Render2D_MRT[i]->Tick();
+	/*Blur->Tick();
+	PostEffect->Tick();*/
+	Bloom->Tick();
+	Render2D->Tick();
 }
 
 void CDemo::PreRender()
 {
-	PostEffect->PreRender();
+	Bloom->Begin_PreRender();
+	//Blur->Begin_PreRender();
+	
 
 	ImGui::SliderInt("Pass ", (int*)&Pass, 1, 0);
 
@@ -184,30 +143,24 @@ void CDemo::PreRender()
 	//	case EWeatherType::Rain: Rain->Render(); break;
 	//	case EWeatherType::Snow: Snow->Render(); break;
 	//}
+	//Blur->End_PreRender();
+	Bloom->End_PreRender();
+	//PostEffect->PreRender(*Bloom->GetRenderTarget());
 
-	//MRT
-	{
-		CRenderTarget::SetRenderTargets(MRT, 4, DepthStencil);
-		for (int i = 0; i < 4; i++)
-			MRT[i]->ClearRenderTarget();
-
-		Viewport->RSSetViewport();
-
-		Demo_MRT->Render();
-	}
 }
 
 void CDemo::Render()
 {
+	//Blur->Render();
+	Bloom->Render();
 }
 
 void CDemo::PostRender()
 {
-	PostEffect->Render();
-	//Render2D->Render();
+	//PostEffect->Render();
 
-	for (int i = 0; i < 4; i++)
-		Render2D_MRT[i]->Render();
+	//Render2D->SetSRV(*PostEffect->GetRenderTarget());
+	Render2D->Render();
 }
 
 void CDemo::CreateTerrain()
@@ -320,6 +273,51 @@ void CDemo::CreateLighting()
 		CLighting::Get()->AddSpotLight(spotLight);
 	}
 
+}
+
+void CDemo::CreateProjector()
+{
+	CProjector::Get()->AddTexture(L"Environments/Window.png");
+	CProjector::Get()->AddTexture(L"Environments/MagicCircle.png");
+
+
+	FProjector projector;
+
+	projector = FProjector();
+	projector.TextureIndex = 0;
+	projector.Color = FColor::Blue;
+	projector.Far = 10;
+	projector.FOV = 0.25f;
+
+	projector.Rotation = FVector(90, 0, 0);
+	projector.Position = FVector(-6.0f, 7.0f, -6.9f);
+	projector.Position += Position;
+
+	CProjector::Get()->AddProjector(projector);
+
+
+	projector = FProjector();
+	projector.TextureIndex = 1;
+	projector.Color = FColor::Green;
+	projector.Far = 10;
+	projector.Width = 3;
+	projector.Height = 3;
+
+	//117.5, 5, 87
+	projector.Rotation = FVector(-90, 0, 0);
+	projector.Position = FVector(-2.5f, 1.0f, -3.0f);
+	projector.Position += Position;
+
+	CProjector::Get()->AddProjector(projector);
+}
+
+void CDemo::CreateBloom()
+{
+	Bloom = new CBloom();
+
+	Render2D = new CRender2D(*Bloom->GetRenderTarget());
+	Render2D->GetTransform()->SetScale(FVector(400, 225, 1));
+	Render2D->GetTransform()->SetPosition(FVector(250, 160, 0));
 }
 
 

@@ -223,3 +223,17 @@ void CBlur::Render(UINT InPass)
 	Shader->SetPassNumber(InPass);
 	Shader->Draw(4);
 }
+
+ID3D11ShaderResourceView* CBlur::GetBlurResultSRV()
+{
+	switch (Type)
+	{
+		case EBlurType::GaussianBlur:
+			return *RenderTargets[2];
+		case EBlurType::GaussianBlurMRT:
+			return *RenderTargets[3];
+		default:
+			return *RenderTargets[0];
+	}
+
+}

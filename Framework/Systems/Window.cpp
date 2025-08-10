@@ -17,7 +17,7 @@ WPARAM CWindow::Run(IExecutable* InMain, bool bGameLoop)
 	CLighting::Create();
 	CProjector::Create();
 	CShaders::Create();
-	CRenderLine::Create();
+	//CRenderLine::Create();
 
 	Main = InMain;
 	Main->Initialize();
@@ -45,7 +45,7 @@ WPARAM CWindow::Run(IExecutable* InMain, bool bGameLoop)
 
 	Main->Destroy();
 
-	CRenderLine::Destroy();
+	//CRenderLine::Destroy();
 	CShaders::Destroy();
 	CProjector::Destroy();
 	CLighting::Destroy();
@@ -179,7 +179,7 @@ void CWindow::MainRender()
 	CContext::Get()->Tick();
 	CLighting::Get()->Tick();
 	CProjector::Get()->Tick();
-	CRenderLine::Get()->Tick();
+	//CRenderLine::Get()->Tick();
 	
 	Main->Tick();
 
@@ -197,7 +197,7 @@ void CWindow::MainRender()
 		CContext::Get()->Render();
 
 		Main->Render();
-		CRenderLine::Get()->Render();
+		//CRenderLine::Get()->Render();
 	}
 
 	//Post Rendering

@@ -26,8 +26,7 @@ public:
 	~CPostEffect();
 
 	void Tick();
-
-	void PreRender();
+	void PreRender(ID3D11ShaderResourceView* InSRV = nullptr);
 	void Render();
 
 public:

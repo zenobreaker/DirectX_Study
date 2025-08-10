@@ -29,6 +29,7 @@ private:
 
 public:
 	CRenderTarget* GetRenderTarget() { return RenderTargets[0]; }
+	ID3D11ShaderResourceView* GetBlurResultSRV();
 
 private:
 	struct FDesc

@@ -13,12 +13,15 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Shaders", "_Shaders", "{6839426D-4C67-4C37-BBDA-48D96610CCB4}"
 	ProjectSection(SolutionItems) = preProject
 		..\_Shaders\00_Billboard.fx = ..\_Shaders\00_Billboard.fx
+		..\_Shaders\00_Bloom.fx = ..\_Shaders\00_Bloom.fx
+		..\_Shaders\00_Blur.fx = ..\_Shaders\00_Blur.fx
 		..\_Shaders\00_Context.fx = ..\_Shaders\00_Context.fx
 		..\_Shaders\00_Definitions.fx = ..\_Shaders\00_Definitions.fx
 		..\_Shaders\00_Material.fx = ..\_Shaders\00_Material.fx
 		..\_Shaders\00_Model.fx = ..\_Shaders\00_Model.fx
 		..\_Shaders\00_Particle.fx = ..\_Shaders\00_Particle.fx
 		..\_Shaders\00_PostEffect.fx = ..\_Shaders\00_PostEffect.fx
+		..\_Shaders\00_Projector.fx = ..\_Shaders\00_Projector.fx
 		..\_Shaders\00_Render2D.fx = ..\_Shaders\00_Render2D.fx
 		..\_Shaders\00_RenderLine.fx = ..\_Shaders\00_RenderLine.fx
 		..\_Shaders\00_Sky.fx = ..\_Shaders\00_Sky.fx

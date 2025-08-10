@@ -198,6 +198,8 @@ CTextureArray::CTextureArray(CShader* InShader, string InParamName, const vector
 		names.push_back(name);
 	}
 
+	if (names.size() <= 0)
+		return; 
 
 	vector<ID3D11Texture2D*> textures;
 	textures = CreateTexture(names, InWidth, InHeight, InMipLevels);
@@ -272,6 +274,8 @@ CTextureArray::~CTextureArray()
 
 void CTextureArray::Render()
 {
+	CheckNull(Shader);
+
 	sSRVs->SetResource(SRV);
 }
 

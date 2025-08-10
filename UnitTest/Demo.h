@@ -30,6 +30,8 @@ public:
 
 private:
 	void CreateLighting();
+	void CreateProjector();
+	void CreateBloom();
 
 	void CreateTerrain();
 
@@ -53,13 +55,11 @@ private:
 
 private:
 	CRender2D* Render2D;
-	CPostEffect* PostEffect;
-	CDepthStencil* DepthStencil;
-	CViewport* Viewport;
+	CBlur* Blur; 
+	CBloom* Bloom;
 
-	CDemo_MRT* Demo_MRT;
-	CRenderTarget* MRT[4];
-	CRender2D* Render2D_MRT[4];
+private:
+	CPostEffect* PostEffect;
 
 private:
 	CShader* Shader;

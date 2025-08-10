@@ -51,3 +51,9 @@ void CRender2D::Render()
 
 	Shader->Draw(4);
 }
+
+
+void CRender2D::SetSRV(ID3D11ShaderResourceView* InSRV)
+{
+	Shader->AsSRV("Render2DMap")->SetResource(InSRV);
+}
