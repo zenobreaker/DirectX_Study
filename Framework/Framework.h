@@ -68,6 +68,7 @@ using namespace chrono;
 #include "Viewer/RenderTarget.h"
 #include "Viewer/DepthStencil.h"
 #include "Viewer/Viewport.h"
+#include "Objects/Shadow.h"
 
 #include "Renders/Shader.h"
 #include "Renders/VertexLayout.h"

@@ -60,6 +60,9 @@ private:
 
 private:
 	CPostEffect* PostEffect;
+	
+	CShadow* Shadow; 
+	CRender2D* DepthRender; 
 
 private:
 	CShader* Shader;

@@ -15,7 +15,7 @@ public:
 	void SaveTexture(wstring InFileName);
 
 	void OMSetRenderTarget(class CDepthStencil* InDepthStencil);
-	void ClearRenderTarget();
+	void ClearRenderTarget(FColor* InColor = nullptr);
 
 public:
 	ID3D11RenderTargetView* GetRTVPointer() const

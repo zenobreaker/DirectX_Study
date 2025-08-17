@@ -49,11 +49,17 @@ void CRender2D::Render()
 	CBuffer->Render();
 	IA_TRIANGLESTRIP();
 
-	Shader->Draw(4);
+	Shader->Draw(6);
 }
 
 
 void CRender2D::SetSRV(ID3D11ShaderResourceView* InSRV)
 {
 	Shader->AsSRV("Render2DMap")->SetResource(InSRV);
+}
+
+void CRender2D::SetViewProjection(const FMatrix& InView, const FMatrix& InProjection)
+{
+	Data.View = InView;
+	Data.Projection = InProjection;
 }

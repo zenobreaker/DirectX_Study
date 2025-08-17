@@ -43,39 +43,30 @@ void CDemo::Initialize()
 	UINT width = (UINT)CD3D::GetDesc().Width;
 	UINT height = (UINT)CD3D::GetDesc().Height;
 
-
-	/*Blur = new CBlur(); 
-	PostEffect = new CPostEffect();*/
-
-	
 	MaterialFolder = L"";
-	ShaderFile = L"TerrainNormal.fx";
+	ShaderFile = L"Shadow.fx";
 
 	CreateLighting();
 	CreateProjector();
-	CreateBloom();
 
 	CreateFloor();
-
-	//CreateBillboard();
 	CreateSky();
-
 	//CreateSphere();
 
 	//CreateKachujin();
 	//CreateKachujin_Old();
 	CreateTurtle_Anim();
+
+	UINT size = 1024;
+	DepthRender = new CRender2D(*CContext::Get()->GetShadow());
+	DepthRender->GetTransform()->SetScale(FVector(400, 225, 1));
+	DepthRender->GetTransform()->SetPosition(FVector(250, 160, 0));
 }
 
 void CDemo::Destroy()
 {
-	Delete(Bloom);
 	Delete(Render2D);
-	/*
-	Delete(Blur);
-	Delete(PostEffect);*/
-
-
+	Delete(DepthRender);
 	Delete(Terrain);
 	Delete(Sky);
 
@@ -114,22 +105,18 @@ void CDemo::Tick()
 
 	/*Blur->Tick();
 	PostEffect->Tick();*/
-	Bloom->Tick();
-	Render2D->Tick();
+	DepthRender->SetSRV(*CContext::Get()->GetShadow());
+	DepthRender->Tick();
 }
 
 void CDemo::PreRender()
 {
-	Bloom->Begin_PreRender();
-	//Blur->Begin_PreRender();
-	
-
 	ImGui::SliderInt("Pass ", (int*)&Pass, 1, 0);
-
-	Sky->Render();
 
 	//Terrain->SetPass(Pass);
 	//Terrain->Render();
+
+	CContext::Get()->GetShadow()->PreRedner(); 
 
 	for (auto render : Renders)
 		render->Render();
@@ -144,23 +131,28 @@ void CDemo::PreRender()
 	//	case EWeatherType::Snow: Snow->Render(); break;
 	//}
 	//Blur->End_PreRender();
-	Bloom->End_PreRender();
+	
 	//PostEffect->PreRender(*Bloom->GetRenderTarget());
 
 }
 
 void CDemo::Render()
 {
-	//Blur->Render();
-	Bloom->Render();
+	Sky->Render();
+
+	for (auto render : Renders)
+	{
+		render->SetPass(2);
+		render->Render();
+	}
+
+	if (BoneDebugger != nullptr)
+		BoneDebugger->Render();
 }
 
 void CDemo::PostRender()
 {
-	//PostEffect->Render();
-
-	//Render2D->SetSRV(*PostEffect->GetRenderTarget());
-	Render2D->Render();
+	DepthRender->Render();
 }
 
 void CDemo::CreateTerrain()
@@ -378,7 +370,7 @@ void CDemo::CreateBillboard()
 
 void CDemo::CreateCube()
 {
-	Shader = CShaders::Get()->GetShader(L"Model_Lighting.fx");
+	Shader = CShaders::Get()->GetShader(ShaderFile);
 	CMeshRender* render = new CMeshRender(Shader);
 	render->ReadMaterial(MaterialFolder + L"Cube");
 	render->AddMaterial(L"Box");
@@ -400,7 +392,7 @@ void CDemo::CreateCube()
 
 void CDemo::CreateFloor()
 {
-	Shader = CShaders::Get()->GetShader(L"Model_Lighting.fx");
+	Shader = CShaders::Get()->GetShader(ShaderFile);
 	CMeshRender* render = new CMeshRender(Shader);
 	render->ReadMaterial(MaterialFolder + L"Plane");
 	render->ReadMesh(L"Plane");
@@ -417,7 +409,7 @@ void CDemo::CreateFloor()
 
 void CDemo::CreateAirplane()
 {
-	Shader = CShaders::Get()->GetShader(L"Model_Lighting.fx");
+	Shader = CShaders::Get()->GetShader(ShaderFile);
 	CMeshRender* render = new CMeshRender(Shader);
 	render->ReadMaterial(MaterialFolder + L"Airplane");
 	render->ReadMesh(L"Airplane");
@@ -435,7 +427,7 @@ void CDemo::CreateAirplane()
 
 void CDemo::CreateSphere()
 {
-	Shader = CShaders::Get()->GetShader(L"Model_Lighting.fx");
+	Shader = CShaders::Get()->GetShader(ShaderFile);
 	CMeshRender* render = new CMeshRender(Shader);
 	render->ReadMaterial(MaterialFolder + L"63/Sphere");
 	render->ReadMesh(L"Sphere");
@@ -502,7 +494,7 @@ void CDemo::CreatTurtle()
 
 void CDemo::CreateTurtle_Anim()
 {
-	Shader = CShaders::Get()->GetShader(L"Animation.fx");
+	Shader = CShaders::Get()->GetShader(ShaderFile);
 	CAnimRender* render = new CAnimRender(Shader);
 	render->ReadMaterial(MaterialFolder + L"Turtle");
 	render->ReadMesh(L"Turtle/Turtle");

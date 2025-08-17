@@ -76,9 +76,9 @@ void CRenderTarget::OMSetRenderTarget(CDepthStencil* InDepthStencil)
 	CD3D::Get()->GetDeviceContext()->OMSetRenderTargets(1, &RTV, *InDepthStencil);
 }
 
-void CRenderTarget::ClearRenderTarget()
+void CRenderTarget::ClearRenderTarget(FColor* InColor)
 {
-	FColor color = CD3D::GetDesc().Background;
+	FColor color = InColor == nullptr ? CD3D::GetDesc().Background : *InColor;
 
 	CD3D::Get()->GetDeviceContext()->ClearRenderTargetView(RTV, color);
 }

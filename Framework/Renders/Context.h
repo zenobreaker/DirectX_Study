@@ -41,6 +41,9 @@ public:
 public:
 	void SetHideSetting(bool InValue) { bHideSetting = InValue; }
 
+public:
+	CShadow* GetShadow() { return Shadow; }
+
 private:
 	static CContext* Instance;
 
@@ -50,6 +53,7 @@ private:
 	CCamera* View;
 	FMatrix Projection;
 	D3D11_VIEWPORT* Viewport;
+	CShadow* Shadow;
 
 	float LightAngle;
 	float LightIntensity;

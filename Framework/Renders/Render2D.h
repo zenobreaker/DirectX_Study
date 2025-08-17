@@ -11,6 +11,7 @@ public:
 
 public:
 	void SetSRV(ID3D11ShaderResourceView* InSRV);
+	void SetViewProjection(const FMatrix& InView, const FMatrix& InProjection);
 
 private:
 	struct FDesc

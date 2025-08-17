@@ -44,4 +44,21 @@ private:
 
 	CConstantBuffer* ProjectorBuffer;
 	CTextureArray* ProjectorMaps;
+
+private:
+	struct FShadowDesc
+	{
+		FMatrix View;
+		FMatrix Projection;
+
+		FVector2D MapSize;
+		float Bias = -0.0006f;
+
+		UINT Quality = 0;
+	} ShadowData;
+
+private:
+	CConstantBuffer* ShadowBuffer;
+	ESRV* sShadowMap;
+
 };

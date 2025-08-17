@@ -164,6 +164,9 @@
     <ClCompile Include="Particle\Particle_ReadFile.cpp">
       <Filter>Particle</Filter>
     </ClCompile>
+    <ClCompile Include="Objects\Shadow.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework.h" />
@@ -335,6 +338,9 @@
     </ClInclude>
     <ClInclude Include="Particle\ParticleData.h">
       <Filter>Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Objects\Shadow.h">
+      <Filter>Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

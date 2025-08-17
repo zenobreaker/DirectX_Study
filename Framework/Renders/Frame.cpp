@@ -20,6 +20,9 @@ CFrame::CFrame(CShader* InShader)
 
 	FProjectorDesc* projector = CProjector::Get()->GetData();
 	ProjectorBuffer = new CConstantBuffer(Shader, "CB_Projectors", projector, sizeof(FProjectorDesc));
+
+	ShadowBuffer = new CConstantBuffer(Shader, "CB_Shadow", &ShadowData, sizeof(FShadowDesc));
+	sShadowMap = Shader->AsSRV("ShadowMap");
 }
 
 CFrame::~CFrame()
@@ -30,6 +33,7 @@ CFrame::~CFrame()
 	Delete(SpotLightBuffer);
 	Delete(ProjectorMaps);
 	Delete(ProjectorBuffer);
+	Delete(ShadowBuffer);
 }
 
 void CFrame::Render()
@@ -66,5 +70,26 @@ void CFrame::Render()
 	{
 		ProjectorMaps->Render();
 		ProjectorBuffer->Render();
+	}
+
+	// Shadow Buffer; 
+	{
+		CContext::Get()->GetShadow()->CalcViewProjection();
+		ShadowData.View = CContext::Get()->GetShadow()->GetView();
+		FMatrix view = CContext::Get()->GetShadow()->GetView();
+		printf("Frame View row0: %f %f %f %f\n", view.M11, view.M12, view.M13, view.M14);
+		printf("Frame View row3: %f %f %f %f\n", view.M41, view.M42, view.M43, view.M44);
+		ShadowData.Projection = CContext::Get()->GetShadow()->GetProjection();
+
+		FVector2D mapSize;
+		mapSize.X = (float)CContext::Get()->GetShadow()->GetWidth();
+		mapSize.Y = (float)CContext::Get()->GetShadow()->GetHeight();
+
+		ShadowData.MapSize = mapSize; 
+		ShadowData.Bias = CContext::Get()->GetShadow()->GetBias(); 
+		ShadowData.Quality= CContext::Get()->GetShadow()->GetQuaility(); 
+
+		ShadowBuffer->Render();
+		sShadowMap->SetResource(*CContext::Get()->GetShadow());
 	}
 }

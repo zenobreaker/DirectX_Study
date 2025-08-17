@@ -9,6 +9,8 @@ CViewport::CViewport(float InWidth, float InHeight, float InX, float InY, float 
 	Vp.Height = InHeight;
 	Vp.MinDepth = InMinDepth;
 	Vp.MaxDepth = InMaxDepth;
+
+	RSSetViewport();
 }
 
 CViewport::~CViewport()

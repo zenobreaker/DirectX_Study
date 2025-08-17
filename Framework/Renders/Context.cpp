@@ -40,12 +40,16 @@ CContext::CContext()
 	Viewport->Height = height;
 	Viewport->MinDepth = 0;
 	Viewport->MaxDepth = 1;
+
+	UINT size = 1024 * 4;
+	Shadow = new CShadow(FVector::Zero, 65, size, size);
 }
 
 CContext::~CContext()
 {
 	Delete(Viewport);
 	Delete(View);
+	Delete(Shadow);
 }
 
 void CContext::Tick()
@@ -53,6 +57,7 @@ void CContext::Tick()
 	Tick_View();
 	Tick_WorldTime();
 	Tick_Light();
+	Shadow->Tick();
 }
 
 void CContext::Tick_View()
